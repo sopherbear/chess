@@ -11,18 +11,23 @@ public class PieceMoveCalculator {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
         if (piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
-            Collection<ChessMove> bishopMoves =  new BishopMovesCalculator(board, myPosition).pieceMoves(board, myPosition);
-            return bishopMoves;
+            return new BishopMovesCalculator(board, myPosition).pieceMoves(board, myPosition);
+
         } else if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
-            return List.of();
+            return  new RookMovesCalculator(board, myPosition).pieceMoves(board, myPosition);
+
         } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
-            return List.of();
+            return  new KnightMovesCalculator(board, myPosition).pieceMoves(board, myPosition);
+
         }  else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-            return List.of();
+            return  new KingMovesCalculator(board, myPosition).pieceMoves(board, myPosition);
+
         } else if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
-            return List.of();
+            return  new QueenMovesCalculator(board, myPosition).pieceMoves(board, myPosition);
+
         } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-            return List.of();
+            return  new PawnMovesCalculator(board, myPosition).pieceMoves(board, myPosition);
+
         }
         return List.of();
     }
@@ -34,6 +39,52 @@ public class PieceMoveCalculator {
 
         private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
             return List.of(new ChessMove(new ChessPosition(5, 4), new ChessPosition(1, 8), null));
+        }
+    }
+
+
+    private class RookMovesCalculator {
+
+        private RookMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
+
+        private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+            return List.of();
+        }
+    }
+
+    private class KnightMovesCalculator {
+
+        private KnightMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
+
+        private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+            return List.of();
+        }
+    }
+
+    private class KingMovesCalculator {
+
+        private KingMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
+
+        private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+            return List.of();
+        }
+    }
+
+    private class QueenMovesCalculator {
+
+        private QueenMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
+
+        private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+            return List.of();
+        }
+    }
+
+    private class PawnMovesCalculator {
+
+        private PawnMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
+
+        private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+            return List.of();
         }
     }
 }
