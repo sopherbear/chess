@@ -53,21 +53,21 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        ChessPiece piece = board.getPiece(myPosition);
-        if (piece.getPieceType() == PieceType.BISHOP) {
-            return List.of(new ChessMove(new ChessPosition(5, 4), new ChessPosition(1, 8), null));
-        } else if (piece.getPieceType() == PieceType.ROOK) {
-            return List.of();
-        } else if (piece.getPieceType() == PieceType.KNIGHT) {
-            return List.of();
-        }  else if (piece.getPieceType() == PieceType.KING) {
-            return List.of();
-        } else if (piece.getPieceType() == PieceType.QUEEN) {
-            return List.of();
-        } else if (piece.getPieceType() == PieceType.PAWN) {
-            return List.of();
-        }
-        return List.of();
+//        ChessPiece piece = board.getPiece(myPosition);
+//        if (piece.getPieceType() == PieceType.BISHOP) {
+//            return
+//        } else if (piece.getPieceType() == PieceType.ROOK) {
+//            return List.of();
+//        } else if (piece.getPieceType() == PieceType.KNIGHT) {
+//            return List.of();
+//        }  else if (piece.getPieceType() == PieceType.KING) {
+//            return List.of();
+//        } else if (piece.getPieceType() == PieceType.QUEEN) {
+//            return List.of();
+//        } else if (piece.getPieceType() == PieceType.PAWN) {
+//            return List.of();
+//        }
+        return new PieceMoveCalculator(board, myPosition).pieceMoves(board, myPosition);
     }
 
 }
