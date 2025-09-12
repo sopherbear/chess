@@ -1,5 +1,7 @@
 package chess;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,11 +37,35 @@ public class PieceMoveCalculator {
 
     private class BishopMovesCalculator {
 
+        private List<ChessMove> upLeftMoves = new ArrayList<>();
+        private List<ChessMove> upRightMoves = new ArrayList<>();
+        private List<ChessMove> downLeftMoves = new ArrayList<>();
+        private List<ChessMove> downRightMoves = new ArrayList<>();
+
+
         private BishopMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
 
         private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+
             return List.of(new ChessMove(new ChessPosition(5, 4), new ChessPosition(1, 8), null));
         }
+
+        private void UpLeftSpaces(ChessBoard board, ChessPosition myPosition) {
+        }
+
+        private void upRightSpaces(ChessBoard board, ChessPosition myPosition) {
+        }
+
+        private void downLeftSpaces(ChessBoard board, ChessPosition myPosition) {
+        }
+
+        private void downRightSpaces(ChessBoard board, ChessPosition myPosition) {
+        }
+
+        private void addChessMove(List<ChessMove> moveList, ChessPosition current, ChessPosition possibility) {
+
+        }
+
     }
 
 
