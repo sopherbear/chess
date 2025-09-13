@@ -8,9 +8,7 @@ package chess;
  */
 public class ChessBoard {
     private ChessPiece[][] boardSpaces = new ChessPiece[8][8];
-    public ChessBoard() {
-
-    }
+    public ChessBoard() {}
 
     /**
      * Adds a chess piece to the chessboard
@@ -39,5 +37,25 @@ public class ChessBoard {
      */
     public void resetBoard() {
         throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        ChessBoard b = (ChessBoard)obj;
+
+        return (this.boardSpaces.equals(b.boardSpaces));
+
     }
 }

@@ -57,4 +57,28 @@ public class ChessPiece {
         return new PieceMoveCalculator(board, myPosition).pieceMoves(board, myPosition);
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s%s", pieceColor, type);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        ChessPiece p = (ChessPiece)obj;
+
+        return (this.pieceColor.equals(p.pieceColor) &&
+                this.type.equals(p.type));
+    }
 }
