@@ -52,10 +52,10 @@ public class PieceMoveCalculator {
             downLeftSpaces(board, myPosition);
             downRightSpaces(board, myPosition);
 
-            addValidMoves(bishopMoves, upLeftMoves);
-            addValidMoves(bishopMoves, upRightMoves);
-            addValidMoves(bishopMoves, downLeftMoves);
-            addValidMoves(bishopMoves, downRightMoves);
+            addValidMoves(bishopMoves, upLeftMoves, board, myPosition);
+            addValidMoves(bishopMoves, upRightMoves, board, myPosition);
+            addValidMoves(bishopMoves, downLeftMoves, board, myPosition);
+            addValidMoves(bishopMoves, downRightMoves, board, myPosition);
             return bishopMoves;
         }
 
@@ -65,7 +65,7 @@ public class PieceMoveCalculator {
             while ((row > 1 && row < 8 )&& (col > 1 && col < 8)) {
                 row +=1;
                 col -=1;
-                addChessMove(upLeftMoves, new ChessMove(new ChessPosition(5,4), new ChessPosition(row, col), null));
+                addChessMove(upLeftMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
             }
         }
 
@@ -75,7 +75,7 @@ public class PieceMoveCalculator {
             while ((row > 1 && row < 8 )&& (col > 1 && col < 8)) {
                 row +=1;
                 col +=1;
-                addChessMove(upRightMoves, new ChessMove(new ChessPosition(5,4), new ChessPosition(row, col), null));
+                addChessMove(upRightMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
             }
         }
 
@@ -85,7 +85,7 @@ public class PieceMoveCalculator {
             while ((row > 1 && row < 8 )&& (col > 1 && col < 8)) {
                 row -=1;
                 col -=1;
-                addChessMove(downLeftMoves, new ChessMove(new ChessPosition(5,4), new ChessPosition(row, col), null));
+                addChessMove(downLeftMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
             }
         }
 
@@ -95,7 +95,7 @@ public class PieceMoveCalculator {
             while ((row > 1 && row < 8 )&& (col > 1 && col < 8)) {
                 row -=1;
                 col +=1;
-                addChessMove(downRightMoves, new ChessMove(new ChessPosition(5,4), new ChessPosition(row, col), null));
+                addChessMove(downRightMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
             }
         }
 
@@ -103,8 +103,18 @@ public class PieceMoveCalculator {
             moveList.add(move);
         }
 
-        private void addValidMoves(List<ChessMove> validMovesList, List<ChessMove> possibleMovesList) {
+        private void addValidMoves(List<ChessMove> validMovesList, List<ChessMove> possibleMovesList, ChessBoard board, ChessPosition myPosition) {
             for (ChessMove move : possibleMovesList) {
+                ChessPiece myPiece = board.getPiece(myPosition);
+                ChessPiece blockingPiece = board.getPiece(move.getEndPosition());
+                if (blockingPiece != null) {
+                    ChessGame.TeamColor myColor = myPiece.getTeamColor();
+                    ChessGame.TeamColor blockingColor = blockingPiece.getTeamColor();
+                    if (!blockingColor.equals(myColor)) {
+                        addChessMove(validMovesList, move);
+                    }
+                    break;
+                }
                 addChessMove(validMovesList, move);
             }
         }
