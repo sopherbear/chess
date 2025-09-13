@@ -41,16 +41,18 @@ public class PieceMoveCalculator {
         private List<ChessMove> upRightMoves = new ArrayList<>();
         private List<ChessMove> downLeftMoves = new ArrayList<>();
         private List<ChessMove> downRightMoves = new ArrayList<>();
+        private List<ChessMove> bishopMoves = new ArrayList<>();
 
 
         private BishopMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
 
         private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-
-            return List.of(new ChessMove(new ChessPosition(5, 4), new ChessPosition(1, 8), null));
+            UpLeftSpaces(board, myPosition);
+            return upLeftMoves;
         }
 
         private void UpLeftSpaces(ChessBoard board, ChessPosition myPosition) {
+            addChessMove(upLeftMoves, new ChessMove(new ChessPosition(5,4), new ChessPosition(1, 8), null));
         }
 
         private void upRightSpaces(ChessBoard board, ChessPosition myPosition) {
@@ -62,8 +64,8 @@ public class PieceMoveCalculator {
         private void downRightSpaces(ChessBoard board, ChessPosition myPosition) {
         }
 
-        private void addChessMove(List<ChessMove> moveList, ChessPosition current, ChessPosition possibility) {
-
+        private void addChessMove(List<ChessMove> moveList, ChessMove move) {
+            moveList.add(move);
         }
 
     }
