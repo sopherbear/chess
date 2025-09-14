@@ -220,11 +220,133 @@ public class PieceMoveCalculator {
     }
 
     private static class QueenMovesCalculator {
-
+        private final List<ChessMove> upMoves = new ArrayList<>();
+        private final List<ChessMove> downMoves = new ArrayList<>();
+        private final List<ChessMove> leftMoves = new ArrayList<>();
+        private final List<ChessMove> rightMoves = new ArrayList<>();
+        private final List<ChessMove> upLeftMoves = new ArrayList<>();
+        private final List<ChessMove> upRightMoves = new ArrayList<>();
+        private final List<ChessMove> downLeftMoves = new ArrayList<>();
+        private final List<ChessMove> downRightMoves = new ArrayList<>();
+        private final List<ChessMove> queenMoves = new ArrayList<>();
         private QueenMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
 
         private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-            return List.of();
+
+            upLeftSpaces(board, myPosition);
+            upRightSpaces(board, myPosition);
+            downLeftSpaces(board, myPosition);
+            downRightSpaces(board, myPosition);
+            upSpaces(board, myPosition);
+            downSpaces(board, myPosition);
+            leftSpaces(board, myPosition);
+            rightSpaces(board, myPosition);
+
+            addValidMoves(queenMoves, upLeftMoves, board, myPosition);
+            addValidMoves(queenMoves, upRightMoves, board, myPosition);
+            addValidMoves(queenMoves, downLeftMoves, board, myPosition);
+            addValidMoves(queenMoves, downRightMoves, board, myPosition);
+            addValidMoves(queenMoves, upMoves, board, myPosition);
+            addValidMoves(queenMoves, downMoves, board, myPosition);
+            addValidMoves(queenMoves, leftMoves, board, myPosition);
+            addValidMoves(queenMoves, rightMoves, board, myPosition);
+            return queenMoves;
+        }
+
+        private void upSpaces(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            while (row < 8 ) {
+                row +=1;
+                addChessMove(upMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
+            }
+        }
+
+        private void downSpaces(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            while (row > 1) {
+                row -=1;
+                addChessMove(downMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
+            }
+        }
+
+        private void leftSpaces(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            while (col > 1) {
+                col -=1;
+                addChessMove(leftMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
+            }
+        }
+
+        private void rightSpaces(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            while (col < 8) {
+                col +=1;
+                addChessMove(rightMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
+            }
+        }
+
+        private void upLeftSpaces(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            while (row < 8 && col > 1) {
+                row +=1;
+                col -=1;
+                addChessMove(upLeftMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
+            }
+        }
+
+        private void upRightSpaces(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            while (row < 8 && col < 8) {
+                row +=1;
+                col +=1;
+                addChessMove(upRightMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
+            }
+        }
+
+        private void downLeftSpaces(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            while (row > 1 && col > 1) {
+                row -=1;
+                col -=1;
+                addChessMove(downLeftMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
+            }
+        }
+
+        private void downRightSpaces(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            while (row > 1 && col < 8) {
+                row -=1;
+                col +=1;
+                addChessMove(downRightMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
+            }
+        }
+
+        private void addChessMove(List<ChessMove> moveList, ChessMove move) {
+            moveList.add(move);
+        }
+
+        private void addValidMoves(List<ChessMove> validMovesList, List<ChessMove> possibleMovesList, ChessBoard board, ChessPosition myPosition) {
+            for (ChessMove move : possibleMovesList) {
+                ChessPiece myPiece = board.getPiece(myPosition);
+                ChessPiece blockingPiece = board.getPiece(move.getEndPosition());
+                if (blockingPiece != null) {
+                    ChessGame.TeamColor myColor = myPiece.getTeamColor();
+                    ChessGame.TeamColor blockingColor = blockingPiece.getTeamColor();
+                    if (!blockingColor.equals(myColor)) {
+                        addChessMove(validMovesList, move);
+                    }
+                    break;
+                }
+                addChessMove(validMovesList, move);
+            }
         }
     }
 
