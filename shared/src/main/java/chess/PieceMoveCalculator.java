@@ -34,6 +34,7 @@ public class PieceMoveCalculator {
     }
 
 
+    //BISHOPMOVESCALCULATOR
     private static class BishopMovesCalculator {
 
         private final List<ChessMove> upLeftMoves = new ArrayList<>();
@@ -121,6 +122,7 @@ public class PieceMoveCalculator {
     }
 
 
+    // ROOKMOVESCALCULATOR
     private static class RookMovesCalculator {
         private final List<ChessMove> upMoves = new ArrayList<>();
         private final List<ChessMove> downMoves = new ArrayList<>();
@@ -200,12 +202,63 @@ public class PieceMoveCalculator {
         }
     }
 
+
+    // KNIGHTMOVESCALCULATOR
     private static class KnightMovesCalculator {
+        private final List<ChessMove> potentialMoves = new ArrayList<>();
+        private final List<ChessMove> validMoves = new ArrayList<>();
 
         private KnightMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
 
         private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-            return List.of();
+            addPotentialMoves(board, myPosition);
+            addValidMoves(validMoves, potentialMoves, board, myPosition);
+            return validMoves;
+        }
+
+        private void addPotentialMoves(ChessBoard board, ChessPosition myPosition){
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+
+            // 2 above current position
+            if (row < 7) {
+                if (col > 1) {
+                    addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row+2, col-1), null));
+                }
+                if (col < 8) {
+                    addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row+2, col+1), null));
+                }
+            }
+
+            // 2 below current position
+            if (row > 1) {
+                if (col > 1) {
+                    addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row-2, col-1), null));
+                }
+                if (col < 8) {
+                    addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row-2, col+1), null));
+                }
+            }
+
+            // 2 right of current position
+            if (col < 7) {
+                if (row > 1) {
+                    addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row-1, col+2), null));
+                }
+                if (row < 8) {
+                    addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row+1, col+2), null));
+                }
+            }
+
+            // 2 left of current position
+            if (col > 1) {
+                if (row > 1) {
+                    addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row-1, col-2), null));
+                }
+                if (row < 8) {
+                    addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row+1, col-2), null));
+                }
+            }
         }
 
         private void addChessMove(List<ChessMove> moveList, ChessMove move) {
@@ -222,13 +275,15 @@ public class PieceMoveCalculator {
                     if (!blockingColor.equals(myColor)) {
                         addChessMove(validMovesList, move);
                     }
-                    break;
+                } else {
+                    addChessMove(validMovesList, move);
                 }
-                addChessMove(validMovesList, move);
             }
         }
     }
 
+
+    // KINGMOVESCALCULATOR
     private static class KingMovesCalculator {
         private final List<ChessMove> potentialMoves = new ArrayList<>();
         private final List<ChessMove> validMoves = new ArrayList<>();
@@ -292,6 +347,8 @@ public class PieceMoveCalculator {
         }
     }
 
+
+    // QUEENMOVESCALCULATOR
     private static class QueenMovesCalculator {
         private final List<ChessMove> upMoves = new ArrayList<>();
         private final List<ChessMove> downMoves = new ArrayList<>();
@@ -423,6 +480,8 @@ public class PieceMoveCalculator {
         }
     }
 
+
+    // PAWNMOVESCALCULATOR
     private static class PawnMovesCalculator {
 
         private PawnMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
