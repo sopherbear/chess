@@ -92,7 +92,7 @@ public class PieceMoveCalculator {
         private void downRightSpaces(ChessBoard board, ChessPosition myPosition) {
             int row = myPosition.getRow();
             int col = myPosition.getColumn();
-            while (row > 1&& col < 8) {
+            while (row > 1 && col < 8) {
                 row -=1;
                 col +=1;
                 addChessMove(downRightMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
@@ -132,13 +132,22 @@ public class PieceMoveCalculator {
         private RookMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
 
         private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-            return List.of();
+            upSpaces(board, myPosition);
+            downSpaces(board, myPosition);
+            leftSpaces(board, myPosition);
+            rightSpaces(board, myPosition);
+
+            addValidMoves(rookMoves, upMoves, board, myPosition);
+            addValidMoves(rookMoves, downMoves, board, myPosition);
+            addValidMoves(rookMoves, leftMoves, board, myPosition);
+            addValidMoves(rookMoves, rightMoves, board, myPosition);
+            return rookMoves;
         }
 
         private void upSpaces(ChessBoard board, ChessPosition myPosition) {
             int row = myPosition.getRow();
             int col = myPosition.getColumn();
-            while ((row > 1 && row < 8 )) {
+            while (row < 8 ) {
                 row +=1;
                 addChessMove(upMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
             }
@@ -147,7 +156,7 @@ public class PieceMoveCalculator {
         private void downSpaces(ChessBoard board, ChessPosition myPosition) {
             int row = myPosition.getRow();
             int col = myPosition.getColumn();
-            while ((row > 1 && row < 8 )) {
+            while (row > 1) {
                 row -=1;
                 addChessMove(downMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
             }
@@ -156,8 +165,7 @@ public class PieceMoveCalculator {
         private void leftSpaces(ChessBoard board, ChessPosition myPosition) {
             int row = myPosition.getRow();
             int col = myPosition.getColumn();
-            while ((row > 1 && row < 8 )&& (col > 1 && col < 8)) {
-                row -=1;
+            while (col > 1) {
                 col -=1;
                 addChessMove(leftMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
             }
@@ -166,8 +174,7 @@ public class PieceMoveCalculator {
         private void rightSpaces(ChessBoard board, ChessPosition myPosition) {
             int row = myPosition.getRow();
             int col = myPosition.getColumn();
-            while ((row > 1 && row < 8 )&& (col > 1 && col < 8)) {
-                row -=1;
+            while (col < 8) {
                 col +=1;
                 addChessMove(rightMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
             }
