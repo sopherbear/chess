@@ -35,13 +35,13 @@ public class PieceMoveCalculator {
     }
 
 
-    private class BishopMovesCalculator {
+    private static class BishopMovesCalculator {
 
-        private List<ChessMove> upLeftMoves = new ArrayList<>();
-        private List<ChessMove> upRightMoves = new ArrayList<>();
-        private List<ChessMove> downLeftMoves = new ArrayList<>();
-        private List<ChessMove> downRightMoves = new ArrayList<>();
-        private List<ChessMove> bishopMoves = new ArrayList<>();
+        private final List<ChessMove> upLeftMoves = new ArrayList<>();
+        private final List<ChessMove> upRightMoves = new ArrayList<>();
+        private final List<ChessMove> downLeftMoves = new ArrayList<>();
+        private final List<ChessMove> downRightMoves = new ArrayList<>();
+        private final List<ChessMove> bishopMoves = new ArrayList<>();
 
 
         private BishopMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
@@ -62,7 +62,7 @@ public class PieceMoveCalculator {
         private void upLeftSpaces(ChessBoard board, ChessPosition myPosition) {
             int row = myPosition.getRow();
             int col = myPosition.getColumn();
-            while ((row > 1 && row < 8 )&& (col > 1 && col < 8)) {
+            while (row < 8 && col > 1) {
                 row +=1;
                 col -=1;
                 addChessMove(upLeftMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
@@ -72,7 +72,7 @@ public class PieceMoveCalculator {
         private void upRightSpaces(ChessBoard board, ChessPosition myPosition) {
             int row = myPosition.getRow();
             int col = myPosition.getColumn();
-            while ((row > 1 && row < 8 )&& (col > 1 && col < 8)) {
+            while (row < 8 && col < 8) {
                 row +=1;
                 col +=1;
                 addChessMove(upRightMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
@@ -82,7 +82,7 @@ public class PieceMoveCalculator {
         private void downLeftSpaces(ChessBoard board, ChessPosition myPosition) {
             int row = myPosition.getRow();
             int col = myPosition.getColumn();
-            while ((row > 1 && row < 8 )&& (col > 1 && col < 8)) {
+            while (row > 1 && col > 1) {
                 row -=1;
                 col -=1;
                 addChessMove(downLeftMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
@@ -92,7 +92,7 @@ public class PieceMoveCalculator {
         private void downRightSpaces(ChessBoard board, ChessPosition myPosition) {
             int row = myPosition.getRow();
             int col = myPosition.getColumn();
-            while ((row > 1 && row < 8 )&& (col > 1 && col < 8)) {
+            while (row > 1&& col < 8) {
                 row -=1;
                 col +=1;
                 addChessMove(downRightMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
@@ -122,16 +122,79 @@ public class PieceMoveCalculator {
     }
 
 
-    private class RookMovesCalculator {
+    private static class RookMovesCalculator {
+        private final List<ChessMove> upMoves = new ArrayList<>();
+        private final List<ChessMove> downMoves = new ArrayList<>();
+        private final List<ChessMove> leftMoves = new ArrayList<>();
+        private final List<ChessMove> rightMoves = new ArrayList<>();
+        private final List<ChessMove> rookMoves = new ArrayList<>();
 
         private RookMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
 
         private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
             return List.of();
         }
+
+        private void upSpaces(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            while ((row > 1 && row < 8 )) {
+                row +=1;
+                addChessMove(upMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
+            }
+        }
+
+        private void downSpaces(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            while ((row > 1 && row < 8 )) {
+                row -=1;
+                addChessMove(downMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
+            }
+        }
+
+        private void leftSpaces(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            while ((row > 1 && row < 8 )&& (col > 1 && col < 8)) {
+                row -=1;
+                col -=1;
+                addChessMove(leftMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
+            }
+        }
+
+        private void rightSpaces(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            while ((row > 1 && row < 8 )&& (col > 1 && col < 8)) {
+                row -=1;
+                col +=1;
+                addChessMove(rightMoves, new ChessMove(myPosition, new ChessPosition(row, col), null));
+            }
+        }
+
+        private void addChessMove(List<ChessMove> moveList, ChessMove move) {
+            moveList.add(move);
+        }
+
+        private void addValidMoves(List<ChessMove> validMovesList, List<ChessMove> possibleMovesList, ChessBoard board, ChessPosition myPosition) {
+            for (ChessMove move : possibleMovesList) {
+                ChessPiece myPiece = board.getPiece(myPosition);
+                ChessPiece blockingPiece = board.getPiece(move.getEndPosition());
+                if (blockingPiece != null) {
+                    ChessGame.TeamColor myColor = myPiece.getTeamColor();
+                    ChessGame.TeamColor blockingColor = blockingPiece.getTeamColor();
+                    if (!blockingColor.equals(myColor)) {
+                        addChessMove(validMovesList, move);
+                    }
+                    break;
+                }
+                addChessMove(validMovesList, move);
+            }
+        }
     }
 
-    private class KnightMovesCalculator {
+    private static class KnightMovesCalculator {
 
         private KnightMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
 
@@ -140,7 +203,7 @@ public class PieceMoveCalculator {
         }
     }
 
-    private class KingMovesCalculator {
+    private static class KingMovesCalculator {
 
         private KingMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
 
@@ -149,7 +212,7 @@ public class PieceMoveCalculator {
         }
     }
 
-    private class QueenMovesCalculator {
+    private static class QueenMovesCalculator {
 
         private QueenMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
 
@@ -158,7 +221,7 @@ public class PieceMoveCalculator {
         }
     }
 
-    private class PawnMovesCalculator {
+    private static class PawnMovesCalculator {
 
         private PawnMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
 
