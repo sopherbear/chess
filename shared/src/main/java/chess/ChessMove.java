@@ -64,7 +64,17 @@ public class ChessMove {
 
         ChessMove m = (ChessMove)obj;
 
+        if (this.promotionPiece == null) {
+            if (m.promotionPiece != null) {
+                return false;
+            }
+            return (this.startPosition.equals(m.startPosition) &&
+                    this.endPosition.equals(m.endPosition));
+        } else if (m.promotionPiece == null) {
+            return false;
+        }
         return (this.startPosition.equals(m.startPosition) &&
-                this.endPosition.equals(m.endPosition));
+                this.endPosition.equals(m.endPosition)) &&
+                this.promotionPiece.equals(m.promotionPiece);
     }
 }
