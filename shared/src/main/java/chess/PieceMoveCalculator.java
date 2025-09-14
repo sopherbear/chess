@@ -207,14 +207,88 @@ public class PieceMoveCalculator {
         private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
             return List.of();
         }
+
+        private void addChessMove(List<ChessMove> moveList, ChessMove move) {
+            moveList.add(move);
+        }
+
+        private void addValidMoves(List<ChessMove> validMovesList, List<ChessMove> possibleMovesList, ChessBoard board, ChessPosition myPosition) {
+            for (ChessMove move : possibleMovesList) {
+                ChessPiece myPiece = board.getPiece(myPosition);
+                ChessPiece blockingPiece = board.getPiece(move.getEndPosition());
+                if (blockingPiece != null) {
+                    ChessGame.TeamColor myColor = myPiece.getTeamColor();
+                    ChessGame.TeamColor blockingColor = blockingPiece.getTeamColor();
+                    if (!blockingColor.equals(myColor)) {
+                        addChessMove(validMovesList, move);
+                    }
+                    break;
+                }
+                addChessMove(validMovesList, move);
+            }
+        }
     }
 
     private static class KingMovesCalculator {
+        private final List<ChessMove> potentialMoves = new ArrayList<>();
+        private final List<ChessMove> validMoves = new ArrayList<>();
 
         private KingMovesCalculator(ChessBoard board, ChessPosition myPosition) {}
 
         private Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-            return List.of();
+            addPotentialMoves(board, myPosition);
+            addValidMoves(validMoves, potentialMoves, board, myPosition);
+            return validMoves;
+        }
+
+        private void addPotentialMoves(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+
+            if (row < 8 ) {
+                addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row+1, col), null));
+            }
+            if (row > 1) {
+                addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row-1, col), null));
+            }
+            if (col > 1) {
+                addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row, col-1), null));
+            }
+            if (col < 8) {
+                addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row, col+1), null));
+            }
+            if (row < 8 && col > 1) {
+                addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row+1, col-1), null));
+            }
+            if (row > 1 && col > 1) {
+                addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row-1, col-1), null));
+            }
+            if (row < 8 && col < 8) {
+                addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row+1, col+1), null));
+            }
+            if (row > 1 && col < 8) {
+                addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row-1, col+1), null));
+            }
+        }
+
+        private void addChessMove(List<ChessMove> moveList, ChessMove move) {
+            moveList.add(move);
+        }
+
+        private void addValidMoves(List<ChessMove> validMovesList, List<ChessMove> possibleMovesList, ChessBoard board, ChessPosition myPosition) {
+            for (ChessMove move : possibleMovesList) {
+                ChessPiece myPiece = board.getPiece(myPosition);
+                ChessPiece blockingPiece = board.getPiece(move.getEndPosition());
+                if (blockingPiece != null) {
+                    ChessGame.TeamColor myColor = myPiece.getTeamColor();
+                    ChessGame.TeamColor blockingColor = blockingPiece.getTeamColor();
+                    if (!blockingColor.equals(myColor)) {
+                        addChessMove(validMovesList, move);
+                    }
+                } else {
+                    addChessMove(validMovesList, move);
+                }
+            }
         }
     }
 
