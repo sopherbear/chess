@@ -77,4 +77,12 @@ public class ChessMove {
                 this.endPosition.equals(m.endPosition)) &&
                 this.promotionPiece.equals(m.promotionPiece);
     }
+
+    @Override
+    public int hashCode() {
+        if (promotionPiece != null) {
+            return startPosition.hashCode()* startPosition.hashCode() + endPosition.hashCode()*endPosition.hashCode() + promotionPiece.hashCode();
+        }
+        return startPosition.hashCode()*31 + endPosition.hashCode()*endPosition.hashCode();
+    }
 }

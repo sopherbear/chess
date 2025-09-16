@@ -81,4 +81,9 @@ public class ChessPiece {
         return (this.pieceColor.equals(p.pieceColor) &&
                 this.type.equals(p.type));
     }
+
+    @Override
+    public int hashCode() {
+        return pieceColor.hashCode() + type.hashCode();
+    }
 }

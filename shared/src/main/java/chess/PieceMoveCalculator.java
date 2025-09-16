@@ -231,7 +231,7 @@ public class PieceMoveCalculator {
             }
 
             // 2 below current position
-            if (row > 1) {
+            if (row > 2) {
                 if (col > 1) {
                     addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row-2, col-1), null));
                 }
@@ -251,7 +251,7 @@ public class PieceMoveCalculator {
             }
 
             // 2 left of current position
-            if (col > 1) {
+            if (col > 2) {
                 if (row > 1) {
                     addChessMove(potentialMoves, new ChessMove(myPosition, new ChessPosition(row-1, col-2), null));
                 }
