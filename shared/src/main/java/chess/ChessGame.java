@@ -65,7 +65,22 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new InvalidMoveException("PLACEHOLDER");
+        var piecePosition = move.getStartPosition();
+        var piece = gameBoard.getPiece(piecePosition);
+
+        if (teamTurn != piece.getTeamColor()) {
+            throw new InvalidMoveException("It is not your turn.");
+        }
+
+        var fineMoves = piece.pieceMoves(gameBoard, piecePosition);
+        for (var fineMove: fineMoves){
+            if (fineMove.equals(move)) {
+                gameBoard.removePiece(piecePosition);
+                gameBoard.addPiece(move.getEndPosition(), piece);
+                return;
+            }
+        }
+        throw new InvalidMoveException("That move is illegal.");
     }
 
     /**
@@ -116,6 +131,7 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return gameBoard;
     }
+
 
     @Override
     public boolean equals(Object o) {
