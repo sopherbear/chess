@@ -35,6 +35,16 @@ public class ChessGame {
         teamTurn = team;
     }
 
+
+    // Sets the teamTurn to the opposite team
+    public void otherTeamTurn(TeamColor team) {
+        if (team == TeamColor.WHITE){
+            setTeamTurn(TeamColor.BLACK);
+        } else {
+            setTeamTurn(TeamColor.WHITE);
+        }
+    }
+
     /**
      * Enum identifying the 2 possible teams in a chess game
      */
@@ -67,6 +77,9 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         var piecePosition = move.getStartPosition();
         var piece = gameBoard.getPiece(piecePosition);
+        if (piece == null){
+            throw new InvalidMoveException("There is no piece there to move");
+        }
 
         if (teamTurn != piece.getTeamColor()) {
             throw new InvalidMoveException("It is not your turn.");
@@ -76,7 +89,11 @@ public class ChessGame {
         for (var fineMove: fineMoves){
             if (fineMove.equals(move)) {
                 gameBoard.removePiece(piecePosition);
+                if (move.getPromotionPiece() != null){
+                    piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+                }
                 gameBoard.addPiece(move.getEndPosition(), piece);
+                otherTeamTurn(teamTurn);
                 return;
             }
         }
