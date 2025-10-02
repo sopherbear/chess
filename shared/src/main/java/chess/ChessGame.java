@@ -1,8 +1,11 @@
 package chess;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -45,6 +48,15 @@ public class ChessGame {
         }
     }
 
+    // Returns the color of the opposite team
+    public TeamColor otherTeam(TeamColor team) {
+        if (team == TeamColor.WHITE){
+            return TeamColor.BLACK;
+        } else {
+           return TeamColor.WHITE;
+        }
+    }
+
     /**
      * Enum identifying the 2 possible teams in a chess game
      */
@@ -65,7 +77,24 @@ public class ChessGame {
         if (playingPiece == null) {
             return null;
         }
-        return playingPiece.pieceMoves(gameBoard, startPosition);
+
+        Collection<ChessMove> legalMoves = new ArrayList<>();
+        var possMoves = playingPiece.pieceMoves(gameBoard, startPosition);
+
+        for (var move : possMoves) {
+            var possBoard = gameBoard;
+            var piecePos = move.getStartPosition();
+            var piece = possBoard.getPiece(piecePos);
+
+            gameBoard.removePiece(piecePos);
+            gameBoard.addPiece(move.getEndPosition(), piece);
+
+            if (!isInCheck(teamTurn, possBoard)) {
+                legalMoves.add(move);
+            }
+        }
+
+        return legalMoves;
     }
 
     /**
@@ -100,6 +129,23 @@ public class ChessGame {
         throw new InvalidMoveException("That move is illegal.");
     }
 
+    public Collection<ChessPosition> kingAndThreatsPos(ChessBoard board, TeamColor teamColor) {
+        var relevantPos = new ArrayList<ChessPosition>();
+        for (int row = 1; row <=8; row++){
+            for (int col = 1; col <=8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+                if (piece == null) {
+                    continue;
+                } else if (piece.getTeamColor() == otherTeam(teamColor)) {
+                    relevantPos.add(pos);
+                } else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    relevantPos.add(pos);
+                }
+            }
+        }
+        return relevantPos;
+    }
     /**
      * Determines if the given team is in check
      *
@@ -107,7 +153,53 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessPosition> posToCheck = kingAndThreatsPos(gameBoard, teamColor);
+        ChessPosition kingPosition = null;
+        Collection<Collection<ChessMove>> enemyMoves = new ArrayList<Collection<ChessMove>>();
+
+        for (var pos: posToCheck) {
+            var piece = gameBoard.getPiece(pos);
+            if (piece.getTeamColor() == teamColor) {
+                kingPosition = pos;
+            } else {
+                enemyMoves.add(piece.pieceMoves(gameBoard, pos));
+            }
+        }
+
+        for (var moveSet: enemyMoves) {
+            for (var move : moveSet) {
+                if( move.getEndPosition() == kingPosition) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isInCheck(TeamColor teamColor, ChessBoard board) {
+        Collection<ChessPosition> posToCheck = kingAndThreatsPos(board, teamColor);
+        ChessPosition kingPosition = null;
+        Collection<Collection<ChessMove>> enemyMoves = new ArrayList<Collection<ChessMove>>();
+
+        for (var pos: posToCheck) {
+            var piece = board.getPiece(pos);
+            if (piece.getTeamColor() == teamColor) {
+                kingPosition = pos;
+            } else {
+                enemyMoves.add(piece.pieceMoves(gameBoard, pos));
+            }
+        }
+
+        for (var moveSet: enemyMoves) {
+            for (var move : moveSet) {
+                if( move.getEndPosition() == kingPosition) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
