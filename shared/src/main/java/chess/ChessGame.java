@@ -89,7 +89,7 @@ public class ChessGame {
             possBoard.removePiece(piecePos);
             possBoard.addPiece(move.getEndPosition(), piece);
 
-            if (!isInCheck(teamTurn, possBoard)) {
+            if (!isInCheck(piece.getTeamColor(), possBoard)) {
                 legalMoves.add(move);
             }
         }
@@ -114,7 +114,7 @@ public class ChessGame {
             throw new InvalidMoveException("It is not your turn.");
         }
 
-        var fineMoves = piece.pieceMoves(gameBoard, piecePosition);
+        var fineMoves = validMoves(piecePosition);
         for (var fineMove: fineMoves){
             if (fineMove.equals(move)) {
                 gameBoard.removePiece(piecePosition);
