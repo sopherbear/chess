@@ -8,9 +8,10 @@ import java.util.Arrays;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Cloneable{
     private ChessPiece[][] boardSpaces = new ChessPiece[8][8];
     public ChessBoard() {}
+
 
     /**
      * Adds a chess piece to the chessboard
@@ -37,7 +38,6 @@ public class ChessBoard {
     public ChessPiece getPiece(ChessPosition position) {
         return boardSpaces[position.getRow()-1][position.getColumn()-1];
     }
-
 
     /**
      * Sets the board to the default starting board
@@ -69,6 +69,30 @@ public class ChessBoard {
 
         for (int i=1; i <=8; i++) {
             addPiece(new ChessPosition(7, i), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+        }
+    }
+
+    @Override
+    public ChessBoard clone() {
+        try {
+            ChessBoard clone = (ChessBoard) super.clone();
+
+            ChessPiece[][] cloneBoardSpaces = new ChessPiece[8][8];
+            for (int i=0; i<8; i++){
+                for (int j=0; j<8; j++) {
+                    ChessPiece boardPiece = boardSpaces[i][j];
+                    if (boardPiece != null) {
+                        var clonePiece = boardPiece.clone();
+                        cloneBoardSpaces[i][j] = clonePiece;
+                    }
+
+                }
+            }
+            clone.boardSpaces = cloneBoardSpaces;
+
+            return clone;
+        } catch (CloneNotSupportedException e){
+            throw new RuntimeException(e);
         }
     }
 

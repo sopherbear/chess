@@ -82,12 +82,12 @@ public class ChessGame {
         var possMoves = playingPiece.pieceMoves(gameBoard, startPosition);
 
         for (var move : possMoves) {
-            var possBoard = gameBoard;
+            ChessBoard possBoard = gameBoard.clone();
             var piecePos = move.getStartPosition();
             var piece = possBoard.getPiece(piecePos);
 
-            gameBoard.removePiece(piecePos);
-            gameBoard.addPiece(move.getEndPosition(), piece);
+            possBoard.removePiece(piecePos);
+            possBoard.addPiece(move.getEndPosition(), piece);
 
             if (!isInCheck(teamTurn, possBoard)) {
                 legalMoves.add(move);
@@ -155,7 +155,7 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         Collection<ChessPosition> posToCheck = kingAndThreatsPos(gameBoard, teamColor);
         ChessPosition kingPosition = null;
-        Collection<Collection<ChessMove>> enemyMoves = new ArrayList<Collection<ChessMove>>();
+        Collection<Collection<ChessMove>> enemyMoves = new ArrayList<>();
 
         for (var pos: posToCheck) {
             var piece = gameBoard.getPiece(pos);
@@ -180,20 +180,21 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor, ChessBoard board) {
         Collection<ChessPosition> posToCheck = kingAndThreatsPos(board, teamColor);
         ChessPosition kingPosition = null;
-        Collection<Collection<ChessMove>> enemyMoves = new ArrayList<Collection<ChessMove>>();
+        Collection<Collection<ChessMove>> enemyMoves = new ArrayList<>();
 
         for (var pos: posToCheck) {
             var piece = board.getPiece(pos);
             if (piece.getTeamColor() == teamColor) {
                 kingPosition = pos;
             } else {
-                enemyMoves.add(piece.pieceMoves(gameBoard, pos));
+                enemyMoves.add(piece.pieceMoves(board, pos));
             }
         }
 
         for (var moveSet: enemyMoves) {
             for (var move : moveSet) {
-                if( move.getEndPosition() == kingPosition) {
+                ChessPosition movePos = move.getEndPosition();
+                if(movePos.equals(kingPosition)) {
                     return true;
                 }
             }
