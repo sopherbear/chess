@@ -146,6 +146,26 @@ public class ChessGame {
         }
         return relevantPos;
     }
+
+
+    public Collection<ChessPosition> getWholeTeam(TeamColor teamColor, ChessBoard board) {
+        Collection<ChessPosition> wholeTeam = new ArrayList<>();
+
+        for (int row = 1; row <=8; row++){
+            for (int col = 1; col <=8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+                if (piece == null) {
+                    continue;
+                }
+                else if (piece.getTeamColor() == teamColor) {
+                    wholeTeam.add(pos);
+                }
+            }
+        }
+        return wholeTeam;
+    }
+
     /**
      * Determines if the given team is in check
      *
@@ -168,7 +188,7 @@ public class ChessGame {
 
         for (var moveSet: enemyMoves) {
             for (var move : moveSet) {
-                if( move.getEndPosition() == kingPosition) {
+                if( move.getEndPosition().equals(kingPosition)) {
                     return true;
                 }
             }
@@ -210,8 +230,18 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+        Collection<ChessPosition> teamInCheck = getWholeTeam(teamColor, gameBoard);
+        for (var piece:teamInCheck) {
+            if (!validMoves(piece).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
+
 
     /**
      * Determines if the given team is in stalemate, which here is defined as having
@@ -221,7 +251,16 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)) {
+            return false;
+        }
+        Collection<ChessPosition> teamInCheck = getWholeTeam(teamColor, gameBoard);
+        for (var piece:teamInCheck) {
+            if (!validMoves(piece).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
