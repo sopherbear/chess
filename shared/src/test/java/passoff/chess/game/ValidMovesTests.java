@@ -64,6 +64,7 @@ public class ValidMovesTests {
                 {5, 7}, {5, 5}, {5, 4}, {5, 3}, {5, 2}
         });
 
+
         assertMoves(game, validMoves, rookPosition);
     }
 
