@@ -10,8 +10,8 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
-                .delete("/db", this::clearDB)
-//                .post("/user", this::registerUser)
+                .delete("/db", this::clear)
+                .post("/user", this::register)
 //                .post("/session", this::login)
 //                .delete("/session", this::logout)
 //                .get("/game", this::listGames)
@@ -26,11 +26,13 @@ public class Server {
 
     }
 
-    private void clearDB(Context ctx){
-        ctx.result("Filler");
+//    private void clear(Context ctx){
+//        ctx.result("Filler");
+//    }
+
+    private void register(Context ctx){
+
     }
-
-
 
     public int run(int desiredPort) {
         javalin.start(desiredPort);
