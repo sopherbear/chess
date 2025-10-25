@@ -3,6 +3,7 @@ package server;
 import io.javalin.*;
 import io.javalin.http.Context;
 import com.google.gson.Gson;
+import exception.ResponseException;
 
 public class Server {
 
@@ -17,7 +18,7 @@ public class Server {
 //                .get("/game", this::listGames)
 //                .post("/game", this::createGame)
 //                .put("/game", this::joinGame)
-//                .exception(ResponseException.class, this::exceptionHandler)
+                .exception(ResponseException.class, this::exceptionHandler)
 
         ;
 
@@ -26,11 +27,16 @@ public class Server {
 
     }
 
-//    private void clear(Context ctx){
-//        ctx.result("Filler");
-//    }
+    private void exceptionHandler(ResponseException ex, Context ctx) {
+        ctx.status(ex.toHttpStatusCode());
+        ctx.json(ex.toJson());
+    }
 
-    private void register(Context ctx){
+    private void clear(Context ctx) throws ResponseException{
+        ctx.result("Filler");
+    }
+
+    private void register(Context ctx) throws ResponseException{
 
     }
 
