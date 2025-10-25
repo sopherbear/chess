@@ -4,12 +4,22 @@ import io.javalin.*;
 import io.javalin.http.Context;
 import com.google.gson.Gson;
 import exception.ResponseException;
+import Service.*;
+import model.*;
 
 public class Server {
 
     private final Javalin javalin;
+    private final UserService userService;
+    private final AuthService authService;
+    private final GameService gameService;
+//    private final
 
-    public Server() {
+    public Server(UserService userService, AuthService authService, GameService gameService) {
+        this.userService = userService;
+        this.authService = authService;
+        this.gameService = gameService;
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .delete("/db", this::clear)
                 .post("/user", this::register)
@@ -37,6 +47,9 @@ public class Server {
     }
 
     private void register(Context ctx) throws ResponseException{
+        RegisterRequest newUser = new Gson().fromJson(ctx.body(), RegisterRequest.class);
+        var userName = newUser.username();
+
 
     }
 
