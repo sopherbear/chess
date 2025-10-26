@@ -18,11 +18,11 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
-//    public UserData getUser(String username) throws ResponseException {
-//        try {
-//            return userDAO.getUser(username);
-//
-//        } catch ()
-//        }
+    public UserData getUser(String userName){
+        return userDAO.getUser(userName);
+    }
 
+    public void createUser(UserData userData) {
+        userDAO.createUser(userData);
+    }
 }

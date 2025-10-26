@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import Service.*;
 import model.*;
+import java.util.UUID;
 
 public class Server {
 
@@ -21,7 +22,7 @@ public class Server {
         this.gameService = gameService;
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
-                .delete("/db", this::clear)
+//                .delete("/db", this::clear)
                 .post("/user", this::register)
 //                .post("/session", this::login)
 //                .delete("/session", this::logout)
@@ -42,15 +43,26 @@ public class Server {
         ctx.json(ex.toJson());
     }
 
-    private void clear(Context ctx) throws ResponseException{
-        ctx.result("Filler");
-    }
+//    private void clear(Context ctx) throws ResponseException{
+//        ctx.result("Filler");
+//    }
 
     private void register(Context ctx) throws ResponseException{
         RegisterRequest newUser = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         var userName = newUser.username();
+        var user = userService.getUser(userName);
 
+        if (user != null) {
+            throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: username does not exist");
+        }
 
+        UserData user2add = new Gson().fromJson(ctx.body(), UserData.class);
+        userService.createUser(user2add);
+
+        var newToken = generateToken();
+        AuthData authData = new AuthData(newToken, userName);
+        authService.createAuth(authData);
+        ctx.json(new Gson().toJson(authData));
     }
 
     public int run(int desiredPort) {
@@ -61,4 +73,9 @@ public class Server {
     public void stop() {
         javalin.stop();
     }
+
+    public static String generateToken() {
+        return UUID.randomUUID().toString();
+    }
+
 }
