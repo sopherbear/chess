@@ -1,5 +1,6 @@
 package server;
 
+import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
@@ -35,9 +36,9 @@ public class Server {
                 .post("/user", this::register)
                 .post("/session", this::login)
                 .delete("/session", this::logout)
-//                .get("/game", this::listGames)
+                .get("/game", this::listGames)
                 .post("/game", this::createGame)
-//                .put("/game", this::joinGame)
+                .put("/game", this::joinGame)
                 .exception(ResponseException.class, this::exceptionHandler)
 
         ;
@@ -99,6 +100,33 @@ public class Server {
         var newGameID = gameService.createGame(authToken, newGame);
 
         ctx.json(new Gson().toJson(newGameID));
+    }
+
+    private void joinGame(Context ctx) throws ResponseException {
+        String authToken = ctx.header("authorization");
+        if (authToken == null) {
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");
+        }
+        GameRequest joinInfo = new Gson().fromJson(ctx.body(), GameRequest.class);
+        if (joinInfo.playerColor() == null) {
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: playerColor not included");
+        }
+        if (!joinInfo.playerColor().equals("BLACK") && !joinInfo.playerColor().equals("WHITE")) {
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: playerColor is invalid");
+        }
+
+        gameService.joinGame(authToken, joinInfo);
+        ctx.status(200);
+    }
+
+    private void listGames(Context ctx) throws ResponseException{
+        String authToken = ctx.header("authorization");
+        if (authToken == null) {
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");
+        }
+
+        var gamesList = gameService.listGames(authToken);
+        ctx.json(new Gson().toJson(gamesList));
     }
 
     public int run(int desiredPort) {

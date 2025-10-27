@@ -1,9 +1,14 @@
 package dataaccess;
 
 import chess.ChessGame;
+import exception.ResponseException;
 import model.*;
 
+import javax.xml.crypto.Data;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO{
     private int nextId = 1;
@@ -20,4 +25,40 @@ public class MemoryGameDAO implements GameDAO{
         nextId ++;
         return new GameID(gameId);
     }
+
+    public GameData getGame(int gameId) throws ResponseException{
+        if (allGames.containsKey(gameId)){
+            return allGames.get(gameId);
+        }
+        else {
+           throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid gameID");
+        }
+    }
+
+    public void addPlayer(int gameId, String playerColor, String username) throws ResponseException{
+        var game = allGames.get(gameId);
+        GameData updatedGame;
+        if (playerColor.equals("WHITE")) {
+            if (game.whiteUsername() != null) {
+                throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: White player already taken");
+            }
+            updatedGame = new GameData(gameId, username, game.blackUsername(), game.gameName(), game.game());
+        } else {
+            if (game.blackUsername() != null) {
+                throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: White player already taken");
+            }
+            updatedGame = new GameData(gameId, game.whiteUsername(), username, game.gameName(), game.game());
+        }
+
+        allGames.put(gameId, updatedGame);
+    }
+
+    public Collection<GameData> listGames() {
+        Collection<GameData> games = new ArrayList<>();
+        for (GameData game: allGames.values()) {
+            games.add(game);
+        }
+        return games;
+    }
+
 }

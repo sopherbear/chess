@@ -293,7 +293,8 @@ public class StandardAPITests {
         TestListResult result = serverFacade.listGames(existingAuth);
 
         assertHttpOk(result);
-        Assertions.assertNotNull(result.getGames(), "List result did not contain an empty game list");
+
+       Assertions.assertNotNull(result.getGames(), "List result did not contain an empty game list");
         Assertions.assertEquals(0, result.getGames().length, "Found games when none should be there");
     }
 
