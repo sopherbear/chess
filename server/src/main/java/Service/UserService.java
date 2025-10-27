@@ -43,6 +43,7 @@ public class UserService {
         gameDAO.deleteInfo();
         userDAO.deleteInfo();
         authDAO.deleteInfo();
+        gameDAO.clearCount();
     }
 
     public AuthData login(LoginRequest loginRequest) throws ResponseException{

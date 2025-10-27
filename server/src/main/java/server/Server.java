@@ -92,7 +92,7 @@ public class Server {
         if (authToken == null) {
             throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");
         }
-        GameRequest newGame = new Gson().fromJson(ctx.body(), GameRequest.class);
+        GameName newGame = new Gson().fromJson(ctx.body(), GameName.class);
         if (newGame.gameName() == null) {
             throw new ResponseException(ResponseException.Code.ClientError, "Error: gameName not included");
         }

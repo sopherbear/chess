@@ -34,4 +34,8 @@ public class MemoryUserDAO implements UserDAO{
             throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: unauthorized");
         }
     }
+
+    public int mapLen(){
+        return users.size();
+    }
 }

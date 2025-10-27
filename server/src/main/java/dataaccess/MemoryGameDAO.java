@@ -61,4 +61,12 @@ public class MemoryGameDAO implements GameDAO{
         return games;
     }
 
+    public int mapLen(){
+        return allGames.size();
+    }
+
+    public void clearCount(){
+        nextId = 1;
+    }
+
 }

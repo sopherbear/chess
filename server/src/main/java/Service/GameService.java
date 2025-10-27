@@ -20,13 +20,13 @@ public class GameService {
         this.gameDAO = gameDAO;
     }
 
-    public GameID createGame(String authToken, GameRequest gameRequest) throws ResponseException{
+    public GameID createGame(String authToken, GameName gameName) throws ResponseException{
         var auth = authDAO.getAuth(authToken);
         if (auth == null) {
             throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found");
         }
 
-        var gameID = gameDAO.createGame(gameRequest.gameName());
+        var gameID = gameDAO.createGame(gameName.gameName());
 
         return gameID;
     }
