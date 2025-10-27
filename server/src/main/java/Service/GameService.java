@@ -37,7 +37,7 @@ public class GameService {
             throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found");
         }
 
-        var game = gameDAO.getGame(gameRequest.gameID());
+        var gamedata = gameDAO.getGame(gameRequest.gameID());
 
         gameDAO.addPlayer(gameRequest.gameID(), gameRequest.playerColor(), auth.username());
     }
