@@ -47,13 +47,12 @@ public class UserService {
 
     public AuthData login(LoginRequest loginRequest) throws ResponseException{
         var username = loginRequest.username();
-        if (username == null) {
-            throw new ResponseException(ResponseException.Code.ClientError, "Error: username cannot be null");
-        }
         var userData = userDAO.getUser(username);
+
         if (userData == null) {
             throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: username does not exist");
         }
+
         userDAO.verifyLogin(username, loginRequest.password());
         var newToken = generateToken();
         var newAuthData = new AuthData(newToken, username);
@@ -61,9 +60,13 @@ public class UserService {
         return newAuthData;
     }
 
-//    public void logout(String AuthToken) throws ResponseException{
-//        AuthDAO.
-//    }
+    public void logout(String authToken) throws ResponseException{
+        var auth = authDAO.getAuth(authToken);
+        if (auth == null) {
+            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found");
+        }
+        authDAO.deleteAuth(authToken);
+    }
 
 
     private static String generateToken() {

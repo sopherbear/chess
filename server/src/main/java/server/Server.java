@@ -28,15 +28,15 @@ public class Server {
         this.authDAO = new MemoryAuthDAO();
         this.gameDAO = new MemoryGameDAO();
         this.userService = new UserService(authDAO, userDAO, gameDAO);
-        this.gameService = new GameService();
+        this.gameService = new GameService(authDAO, userDAO, gameDAO);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .delete("/db", this::clear)
                 .post("/user", this::register)
                 .post("/session", this::login)
-//                .delete("/session", this::logout)
+                .delete("/session", this::logout)
 //                .get("/game", this::listGames)
-//                .post("/game", this::createGame)
+                .post("/game", this::createGame)
 //                .put("/game", this::joinGame)
                 .exception(ResponseException.class, this::exceptionHandler)
 
@@ -77,11 +77,29 @@ public class Server {
         ctx.json(new Gson().toJson(sessionAuth));
     }
 
-//    private void logout(Context ctx) throws ResponseException{
-//        String authToken = ctx.header("authorization");
-//        userService.logout(authToken);
-//        ctx.status(200);
-//    }
+    private void logout(Context ctx) throws ResponseException{
+        String authToken = ctx.header("authorization");
+        if (authToken == null) {
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");
+        }
+        userService.logout(authToken);
+        ctx.status(200);
+    }
+
+    private void createGame(Context ctx) throws ResponseException{
+        String authToken = ctx.header("authorization");
+        if (authToken == null) {
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");
+        }
+        GameRequest newGame = new Gson().fromJson(ctx.body(), GameRequest.class);
+        if (newGame.gameName() == null) {
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: gameName not included");
+        }
+
+        var newGameID = gameService.createGame(authToken, newGame);
+
+        ctx.json(new Gson().toJson(newGameID));
+    }
 
     public int run(int desiredPort) {
         javalin.start(desiredPort);
