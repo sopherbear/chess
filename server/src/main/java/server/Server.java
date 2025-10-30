@@ -1,9 +1,6 @@
 package server;
 
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
 import com.google.gson.Gson;
@@ -12,19 +9,21 @@ import Service.*;
 import model.*;
 import java.util.UUID;
 
+
 public class Server {
 
-    private final Javalin javalin;
-    private final UserService userService;
-    private final GameService gameService;
-    private final MemoryUserDAO userDAO;
-    private final MemoryAuthDAO authDAO;
-    private final MemoryGameDAO gameDAO;
+    private Javalin javalin;
+    private UserService userService;
+    private GameService gameService;
+    private UserDAO userDAO;
+    private AuthDAO authDAO;
+    private GameDAO gameDAO;
 
 
 //    private final
 
-    public Server() {
+    public Server(){
+        try {
         this.userDAO = new MemoryUserDAO();
         this.authDAO = new MemoryAuthDAO();
         this.gameDAO = new MemoryGameDAO();
@@ -42,6 +41,10 @@ public class Server {
                 .exception(ResponseException.class, this::exceptionHandler)
 
         ;
+
+        } catch (Throwable ex){
+            System.out.printf("Unable to start server: %s%n", ex.getMessage());
+        }
 
         // Register your endpoints and exception handlers here.
 

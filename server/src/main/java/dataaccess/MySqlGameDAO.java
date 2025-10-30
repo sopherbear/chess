@@ -7,7 +7,8 @@ import model.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class MySQLGameDAO implements GameDAO{
+public class MySqlGameDAO implements GameDAO{
+
 
     public void deleteInfo(){
     }
