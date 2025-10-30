@@ -12,7 +12,6 @@ import java.util.UUID;
 
 
 public class UserService {
-    // Will likely need to move this later
     private final AuthDAO authDAO;
     private final UserDAO userDAO;
     private final GameDAO gameDAO;
@@ -39,7 +38,7 @@ public class UserService {
         return authData;
     }
 
-    public void clear(){
+    public void clear() throws DataAccessException{
         gameDAO.deleteInfo();
         userDAO.deleteInfo();
         authDAO.deleteInfo();

@@ -24,9 +24,9 @@ public class Server {
 
     public Server(){
         try {
-        this.userDAO = new MemoryUserDAO();
-        this.authDAO = new MemoryAuthDAO();
-        this.gameDAO = new MemoryGameDAO();
+        this.userDAO = new MySqlUserDAO();
+        this.authDAO = new MySqlAuthDAO();
+        this.gameDAO = new MySqlGameDAO();
         this.userService = new UserService(authDAO, userDAO, gameDAO);
         this.gameService = new GameService(authDAO, userDAO, gameDAO);
 
@@ -56,7 +56,7 @@ public class Server {
         ctx.json(ex.toJson());
     }
 
-    private void clear(Context ctx) throws ResponseException{
+    private void clear(Context ctx) throws DataAccessException{
         userService.clear();
         ctx.status(200);
     }
@@ -139,10 +139,6 @@ public class Server {
 
     public void stop() {
         javalin.stop();
-    }
-
-    public static String generateToken() {
-        return UUID.randomUUID().toString();
     }
 
 }

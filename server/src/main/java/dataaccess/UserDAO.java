@@ -6,6 +6,6 @@ import model.*;
 public interface UserDAO {
     UserData getUser(String username);
     void createUser(UserData userData);
-    void deleteInfo();
+    void deleteInfo() throws DataAccessException;
     void verifyLogin(String username, String password) throws ResponseException;
 }

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import exception.ResponseException;
 import model.*;
 
-import javax.xml.crypto.Data;
 
 
 public class MemoryUserDAO implements UserDAO{
@@ -24,7 +23,7 @@ public class MemoryUserDAO implements UserDAO{
         users.put(userData.username(), userData);
     }
 
-    public void deleteInfo(){
+    public void deleteInfo() throws DataAccessException{
         users.clear();
     }
 
