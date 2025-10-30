@@ -10,7 +10,11 @@ import java.util.Collection;
 public class MySqlGameDAO implements GameDAO{
 
 
-    public void deleteInfo(){
+    public void deleteInfo() throws DataAccessException{
+        var statement = "TRUNCATE game_data";
+
+        var updateExecutor = new ExecuteDatabaseUpdates();
+        updateExecutor.executeUpdate(statement);
     }
 
     public GameID createGame(String gameName) {

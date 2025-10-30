@@ -21,14 +21,10 @@ public class MySqlUserDAO implements UserDAO{
     }
 
     public void deleteInfo() throws DataAccessException{
-        var statement1 = "TRUNCATE game_data";
-        var statement2 = "TRUNCATE auth_data";
-        var statement3 = "TRUNCATE user_data";
+        var statement = "TRUNCATE user_data";
 
         var updateExecutor = new ExecuteDatabaseUpdates();
-        updateExecutor.executeUpdate(statement1);
-        updateExecutor.executeUpdate(statement2);
-        updateExecutor.executeUpdate(statement3);
+        updateExecutor.executeUpdate(statement);
     }
 
     public void verifyLogin(String username, String password) throws ResponseException{

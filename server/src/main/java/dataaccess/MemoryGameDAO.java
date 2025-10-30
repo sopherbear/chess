@@ -14,7 +14,7 @@ public class MemoryGameDAO implements GameDAO{
     private int nextId = 1;
     final private HashMap<Integer, GameData> allGames = new HashMap<>();
 
-    public void deleteInfo(){
+    public void deleteInfo() throws DataAccessException{
         allGames.clear();
     }
 

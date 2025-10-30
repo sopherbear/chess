@@ -11,8 +11,11 @@ public class MySqlAuthDAO implements AuthDAO{
     public void createAuth(AuthData authData) {
 
     }
-    public void deleteInfo() {
+    public void deleteInfo() throws DataAccessException{
+        var statement = "TRUNCATE auth_data";
 
+        var updateExecutor = new ExecuteDatabaseUpdates();
+        updateExecutor.executeUpdate(statement);
     }
     public void deleteAuth(String authToken) {
 
