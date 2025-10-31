@@ -5,6 +5,10 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -28,7 +32,20 @@ public class MySqlGameDAO implements GameDAO{
     }
 
     public GameData getGame(int gameId) throws ResponseException {
-        return new GameData(99, null, null, "jerry", new ChessGame());
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game_data WHERE gameID=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readGameData(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return null;
     }
 
     public void addPlayer(int gameId, String playerColor, String username) throws ResponseException {
@@ -36,5 +53,15 @@ public class MySqlGameDAO implements GameDAO{
 
     public Collection<GameData> listGames() {
         return new ArrayList<>();
+    }
+
+    public GameData readGameData(ResultSet rs) throws SQLException {
+        var gameId = rs.getInt("gameID");
+        var whiteUsername = rs.getString("whiteUsername");
+        var blackUsername = rs.getString("blackUsername");
+        var gameName = rs.getString("gameName");
+        var game = rs.getString("game");
+        ChessGame chessGame = new Gson().fromJson(game, ChessGame.class);
+        return new GameData(gameId, whiteUsername, blackUsername, gameName, chessGame);
     }
 }
