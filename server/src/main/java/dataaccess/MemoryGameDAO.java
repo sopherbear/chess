@@ -16,6 +16,7 @@ public class MemoryGameDAO implements GameDAO{
 
     public void deleteInfo() throws DataAccessException{
         allGames.clear();
+        nextId = 1;
     }
 
     public GameID createGame(String gameName) {
@@ -63,10 +64,6 @@ public class MemoryGameDAO implements GameDAO{
 
     public int mapLen(){
         return allGames.size();
-    }
-
-    public void clearCount(){
-        nextId = 1;
     }
 
 }

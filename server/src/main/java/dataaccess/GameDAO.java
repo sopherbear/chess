@@ -11,5 +11,4 @@ public interface GameDAO {
     GameData getGame(int gameId) throws ResponseException;
     void addPlayer(int gameId, String playerColor, String username) throws ResponseException;
     Collection<GameData> listGames();
-    void clearCount();
 }
