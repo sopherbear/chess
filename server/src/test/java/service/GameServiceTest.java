@@ -2,6 +2,7 @@ package service;
 
 import Service.UserService;
 import Service.GameService;
+import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
@@ -19,15 +20,15 @@ public class GameServiceTest {
     private static MemoryAuthDAO authDAO = new MemoryAuthDAO();
     static final UserService userService = new UserService(authDAO, userDAO, gameDAO);
 
-    static final GameService service = new GameService(authDAO, userDAO, gameDAO);
+    static final GameService service = new GameService(authDAO, gameDAO);
 
     @BeforeEach
-    void clearTests() throws ResponseException {
+    void clearTests() throws ResponseException, DataAccessException {
         userService.clear();
     }
 
     @Test
-    void createGame() throws ResponseException {
+    void createGame() throws ResponseException, DataAccessException {
         authDAO.createAuth(new AuthData("starshine", "Geodude"));
         var name = new GameName( "UberSuperFunGame");
         var id = service.createGame("starshine", name);
@@ -40,7 +41,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void listGames() throws ResponseException {
+    void listGames() throws ResponseException, DataAccessException {
         gameDAO.createGame("Peppermint Patty");
         gameDAO.createGame("Charlie Brown");
         gameDAO.createGame("Snoop Dogg");
@@ -53,8 +54,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void joinGame() throws ResponseException {
-        gameDAO.clearCount();
+    void joinGame() throws ResponseException, DataAccessException {
         authDAO.createAuth(new AuthData("starshine", "Geodude"));
         gameDAO.createGame("Jeffrey");
         service.joinGame("starshine", new GameRequest(1, "WHITE"));

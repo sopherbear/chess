@@ -34,7 +34,7 @@ public class MemoryGameDAO implements GameDAO{
         }
     }
 
-    public void addPlayer(int gameId, String playerColor, String username) throws ResponseException{
+    public void addPlayer(int gameId, String playerColor, String username) throws ResponseException, DataAccessException{
         var game = allGames.get(gameId);
         GameData updatedGame;
         if (playerColor.equals("WHITE")) {

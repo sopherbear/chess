@@ -105,7 +105,7 @@ public class Server {
         ctx.json(new Gson().toJson(newGameID));
     }
 
-    private void joinGame(Context ctx) throws ResponseException {
+    private void joinGame(Context ctx) throws ResponseException, DataAccessException {
         String authToken = ctx.header("authorization");
         if (authToken == null) {
             throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");

@@ -26,7 +26,7 @@ public class GameService {
         return gameID;
     }
 
-    public void joinGame(String authToken, GameRequest gameRequest) throws ResponseException{
+    public void joinGame(String authToken, GameRequest gameRequest) throws ResponseException, DataAccessException{
         var auth = authDAO.getAuth(authToken);
         if (auth == null) {
             throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found");

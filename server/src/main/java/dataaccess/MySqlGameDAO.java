@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,7 +49,24 @@ public class MySqlGameDAO implements GameDAO{
         return null;
     }
 
-    public void addPlayer(int gameId, String playerColor, String username) throws ResponseException {
+    public void addPlayer(int gameId, String playerColor, String username) throws ResponseException, DataAccessException {
+        var canAddPlayer = colorAvailable(gameId, playerColor);
+        if (!canAddPlayer) {
+            throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: Color already taken");
+        }
+
+        String command;
+        if (playerColor.equals("WHITE")) {
+            command = "UPDATE game_data SET whiteUsername=? WHERE gameID=?";
+        } else {
+            command = "UPDATE game_data SET blackUsername=? WHERE gameID=?";
+        }
+
+        var updateExecutor = new ExecuteDatabaseUpdates();
+        updateExecutor.executeUpdate(command, username, gameId);
+
+
+
     }
 
     public Collection<GameData> listGames() throws ResponseException{
@@ -68,7 +86,7 @@ public class MySqlGameDAO implements GameDAO{
         return result;
     }
 
-    public GameData readGameData(ResultSet rs) throws SQLException {
+    private GameData readGameData(ResultSet rs) throws SQLException {
         var gameId = rs.getInt("gameID");
         var whiteUsername = rs.getString("whiteUsername");
         var blackUsername = rs.getString("blackUsername");
@@ -77,4 +95,35 @@ public class MySqlGameDAO implements GameDAO{
         ChessGame chessGame = new Gson().fromJson(game, ChessGame.class);
         return new GameData(gameId, whiteUsername, blackUsername, gameName, chessGame);
     }
+
+    private Boolean readPlayerColor(ResultSet rs, String column) throws SQLException {
+        var playerColor = rs.getString(column);
+        return playerColor != null;
+    }
+
+    private Boolean colorAvailable(int gameId, String playerColor) throws ResponseException{
+        String wantedColumn;
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String statement;
+            if (playerColor.equals("WHITE")) {
+                statement = "SELECT whiteUsername FROM game_data WHERE gameID=?";
+                wantedColumn= "whiteUsername";
+            } else {
+                statement = "SELECT blackUsername FROM game_data WHERE gameID = ?";
+                wantedColumn = "blackUsername";
+            }
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readPlayerColor(rs, wantedColumn);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return null;
+    }
+
 }
