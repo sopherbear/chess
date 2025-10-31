@@ -1,9 +1,7 @@
 package dataaccess;
 
-import com.google.gson.Gson;
 import exception.ResponseException;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
@@ -51,7 +49,12 @@ public class MySqlUserDAO implements UserDAO{
     }
 
     public void verifyLogin(String username, String password) throws ResponseException{
+        var user = getUser(username);
 
+        Boolean correctPassword = BCrypt.checkpw(password, user.password());
+        if (!correctPassword) {
+            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: incorrect password");
+        }
     }
 
     public UserData readUserData(ResultSet rs) throws SQLException {

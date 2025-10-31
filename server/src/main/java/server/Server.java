@@ -7,7 +7,6 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import Service.*;
 import model.*;
-import java.util.UUID;
 
 
 public class Server {
