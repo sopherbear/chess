@@ -51,8 +51,21 @@ public class MySqlGameDAO implements GameDAO{
     public void addPlayer(int gameId, String playerColor, String username) throws ResponseException {
     }
 
-    public Collection<GameData> listGames() {
-        return new ArrayList<>();
+    public Collection<GameData> listGames() throws ResponseException{
+        var result = new ArrayList<GameData>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game_data";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        result.add(readGameData(rs));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return result;
     }
 
     public GameData readGameData(ResultSet rs) throws SQLException {

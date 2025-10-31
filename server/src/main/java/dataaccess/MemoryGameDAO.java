@@ -52,7 +52,7 @@ public class MemoryGameDAO implements GameDAO{
         allGames.put(gameId, updatedGame);
     }
 
-    public Collection<GameData> listGames() {
+    public Collection<GameData> listGames() throws ResponseException{
         Collection<GameData> games = new ArrayList<>();
         for (GameData game: allGames.values()) {
             games.add(game);
