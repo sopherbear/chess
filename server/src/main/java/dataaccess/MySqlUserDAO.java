@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,8 +37,10 @@ public class MySqlUserDAO implements UserDAO{
 
     public void createUser(UserData userData) throws DataAccessException{
         var statement = "INSERT INTO user_data (name, type, json) VALUES (?, ?, ?)";
+        String encryptedPassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
+
         var updateExecutor = new ExecuteDatabaseUpdates();
-        updateExecutor.executeUpdate(statement, userData.username(), userData.password(), userData.email());
+        updateExecutor.executeUpdate(statement, userData.username(), encryptedPassword, userData.email());
     }
 
     public void deleteInfo() throws DataAccessException{
