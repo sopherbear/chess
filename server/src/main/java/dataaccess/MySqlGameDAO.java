@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
 
@@ -17,8 +18,13 @@ public class MySqlGameDAO implements GameDAO{
         updateExecutor.executeUpdate(statement);
     }
 
-    public GameID createGame(String gameName) {
-        return new GameID(99);
+    public GameID createGame(String gameName) throws DataAccessException{
+        var statement = "INSERT INTO user_data (gameName, game) VALUES (?, ?)";
+
+        var updateExecutor = new ExecuteDatabaseUpdates();
+        String jsonChess = new Gson().toJson(new ChessGame());
+        var gameID = updateExecutor.executeUpdate(statement, gameName, jsonChess);
+        return new GameID(gameID);
     }
 
     public GameData getGame(int gameId) throws ResponseException {
@@ -30,9 +36,5 @@ public class MySqlGameDAO implements GameDAO{
 
     public Collection<GameData> listGames() {
         return new ArrayList<>();
-    }
-
-    public void clearCount() {
-
     }
 }

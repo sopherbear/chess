@@ -3,8 +3,8 @@ import model.AuthData;
 import exception.ResponseException;
 
 public interface AuthDAO {
-    AuthData getAuth(String authToken);
-    void createAuth(AuthData authData);
+    AuthData getAuth(String authToken) throws ResponseException;
+    void createAuth(AuthData authData) throws DataAccessException;
     void deleteInfo() throws DataAccessException;
-    void deleteAuth(String authToken);
+    void deleteAuth(String authToken) throws DataAccessException;
 }

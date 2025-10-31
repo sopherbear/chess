@@ -4,11 +4,9 @@ import chess.ChessGame;
 import exception.ResponseException;
 import model.*;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO{
     private int nextId = 1;
@@ -19,7 +17,7 @@ public class MemoryGameDAO implements GameDAO{
         nextId = 1;
     }
 
-    public GameID createGame(String gameName) {
+    public GameID createGame(String gameName) throws DataAccessException{
         var gameId = nextId;
         var game = new GameData(gameId, null, null, gameName, new ChessGame());
         allGames.put(gameId, game);

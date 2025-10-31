@@ -2,25 +2,20 @@ package Service;
 
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
-import dataaccess.UserDAO;
 import model.*;
 import exception.ResponseException;
 import dataaccess.DataAccessException;
 
-import java.util.Collection;
-
 public class GameService {
     private final AuthDAO authDAO;
-    private final UserDAO userDAO;
     private final GameDAO gameDAO;
 
-    public GameService(AuthDAO authDAO, UserDAO userDAO, GameDAO gameDAO){
+    public GameService(AuthDAO authDAO, GameDAO gameDAO){
         this.authDAO = authDAO;
-        this.userDAO = userDAO;
         this.gameDAO = gameDAO;
     }
 
-    public GameID createGame(String authToken, GameName gameName) throws ResponseException{
+    public GameID createGame(String authToken, GameName gameName) throws ResponseException, DataAccessException{
         var auth = authDAO.getAuth(authToken);
         if (auth == null) {
             throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found");

@@ -1,15 +1,14 @@
 package dataaccess;
 
+import exception.ResponseException;
 import model.AuthData;
-
-import javax.xml.crypto.Data;
 import java.util.HashMap;
 
 public class MemoryAuthDAO implements AuthDAO{
     final private HashMap<String, AuthData> allAuths = new HashMap<>();
 
 
-    public AuthData getAuth(String authToken){
+    public AuthData getAuth(String authToken) throws ResponseException {
         if (allAuths.containsKey(authToken)){
             return allAuths.get(authToken);
         }
@@ -18,7 +17,7 @@ public class MemoryAuthDAO implements AuthDAO{
         }
     }
 
-    public void createAuth(AuthData authData) {
+    public void createAuth(AuthData authData) throws DataAccessException{
         allAuths.put(authData.authToken(), authData);
     }
 
@@ -26,7 +25,7 @@ public class MemoryAuthDAO implements AuthDAO{
         allAuths.clear();
     }
 
-    public void deleteAuth(String authToken) {
+    public void deleteAuth(String authToken) throws DataAccessException{
         allAuths.remove(authToken);
     }
 

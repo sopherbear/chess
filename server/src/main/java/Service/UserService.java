@@ -8,6 +8,7 @@ import model.AuthData;
 import exception.ResponseException;
 import dataaccess.DataAccessException;
 
+import javax.xml.crypto.Data;
 import java.util.UUID;
 
 
@@ -44,7 +45,7 @@ public class UserService {
         authDAO.deleteInfo();
     }
 
-    public AuthData login(LoginRequest loginRequest) throws ResponseException{
+    public AuthData login(LoginRequest loginRequest) throws ResponseException, DataAccessException {
         var username = loginRequest.username();
         var userData = userDAO.getUser(username);
 
@@ -59,7 +60,7 @@ public class UserService {
         return newAuthData;
     }
 
-    public void logout(String authToken) throws ResponseException{
+    public void logout(String authToken) throws ResponseException, DataAccessException{
         var auth = authDAO.getAuth(authToken);
         if (auth == null) {
             throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found");

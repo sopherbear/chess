@@ -51,7 +51,7 @@ public class MySqlUserDAO implements UserDAO{
     public void verifyLogin(String username, String password) throws ResponseException{
         var user = getUser(username);
 
-        Boolean correctPassword = BCrypt.checkpw(password, user.password());
+        var correctPassword = BCrypt.checkpw(password, user.password());
         if (!correctPassword) {
             throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: incorrect password");
         }
@@ -78,13 +78,15 @@ public class MySqlUserDAO implements UserDAO{
             """
             CREATE TABLE IF NOT EXISTS game_data (
               `gameID` INT NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) NULL,
-              `blackUsername` varchar(256) NULL,
+              `whiteUsername` varchar(256) DEFAULT NULL,
+              `blackUsername` varchar(256) DEFAULT NULL,
               `gameName` varchar(256) NOT NULL,
               `game`  TEXT NOT NULL,
               PRIMARY KEY (`gameID`),
               INDEX(whiteUsername),
-              INDEX(blackUsername)
+              INDEX(blackUsername),
+              INDEX(gameName),
+              INDEX(game)
               )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
 

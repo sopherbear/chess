@@ -8,6 +8,8 @@ import exception.ResponseException;
 import Service.*;
 import model.*;
 
+import javax.xml.crypto.Data;
+
 
 public class Server {
 
@@ -27,7 +29,7 @@ public class Server {
         this.authDAO = new MySqlAuthDAO();
         this.gameDAO = new MySqlGameDAO();
         this.userService = new UserService(authDAO, userDAO, gameDAO);
-        this.gameService = new GameService(authDAO, userDAO, gameDAO);
+        this.gameService = new GameService(authDAO, gameDAO);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .delete("/db", this::clear)
@@ -70,7 +72,7 @@ public class Server {
         ctx.json(new Gson().toJson(userAuth));
     }
 
-    private void login(Context ctx) throws ResponseException{
+    private void login(Context ctx) throws ResponseException, DataAccessException {
         LoginRequest newLogin = new Gson().fromJson(ctx.body(), LoginRequest.class);
         if (newLogin.password() == null || newLogin.username() == null) {
             throw new ResponseException(ResponseException.Code.ClientError, "Error: login info not complete");
@@ -80,7 +82,7 @@ public class Server {
         ctx.json(new Gson().toJson(sessionAuth));
     }
 
-    private void logout(Context ctx) throws ResponseException{
+    private void logout(Context ctx) throws ResponseException, DataAccessException{
         String authToken = ctx.header("authorization");
         if (authToken == null) {
             throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");
@@ -89,7 +91,7 @@ public class Server {
         ctx.status(200);
     }
 
-    private void createGame(Context ctx) throws ResponseException{
+    private void createGame(Context ctx) throws ResponseException, DataAccessException{
         String authToken = ctx.header("authorization");
         if (authToken == null) {
             throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");
