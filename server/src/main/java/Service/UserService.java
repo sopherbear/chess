@@ -23,7 +23,7 @@ public class UserService {
     }
 
 
-    public AuthData register(RegisterRequest registerRequest) throws ResponseException{
+    public AuthData register(RegisterRequest registerRequest) throws ResponseException, DataAccessException{
         var userName = registerRequest.username();
         var user = userDAO.getUser(userName);
         if (user != null) {

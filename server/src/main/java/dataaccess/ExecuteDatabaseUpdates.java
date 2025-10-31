@@ -26,10 +26,10 @@ public class ExecuteDatabaseUpdates{
                 }
                 ps.executeUpdate();
 
-                ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
+//                ResultSet rs = ps.getGeneratedKeys();
+//                if (rs.next()) {
+//                    return rs.getInt(1);
+//                }
 
                 return 0;
             }

@@ -19,7 +19,7 @@ public class MemoryUserDAO implements UserDAO{
         }
     }
 
-    public void createUser(UserData userData) {
+    public void createUser(UserData userData) throws DataAccessException{
         users.put(userData.username(), userData);
     }
 

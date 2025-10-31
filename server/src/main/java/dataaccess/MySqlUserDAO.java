@@ -1,8 +1,13 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import exception.ResponseException;
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
+
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
@@ -12,12 +17,27 @@ public class MySqlUserDAO implements UserDAO{
         configureDatabase();
     }
 
-    public UserData getUser(String username){
-        return new UserData("temp", "temp", "temp");
+    public UserData getUser(String username) throws ResponseException{
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, password, email FROM user_data WHERE id=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readUserData(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return null;
     }
 
-    public void createUser(UserData userData){
-
+    public void createUser(UserData userData) throws DataAccessException{
+        var statement = "INSERT INTO user_data (name, type, json) VALUES (?, ?, ?)";
+        var updateExecutor = new ExecuteDatabaseUpdates();
+        updateExecutor.executeUpdate(statement, userData.username(), userData.password(), userData.email());
     }
 
     public void deleteInfo() throws DataAccessException{
@@ -29,6 +49,13 @@ public class MySqlUserDAO implements UserDAO{
 
     public void verifyLogin(String username, String password) throws ResponseException{
 
+    }
+
+    public UserData readUserData(ResultSet rs) throws SQLException {
+        var username = rs.getString("username");
+        var password = rs.getString("password");
+        var email = rs.getString("email");
+        return new UserData(username, password, email);
     }
 
     private final String[] createStatements = {

@@ -61,7 +61,7 @@ public class Server {
         ctx.status(200);
     }
 
-    private void register(Context ctx) throws ResponseException{
+    private void register(Context ctx) throws ResponseException, DataAccessException{
         RegisterRequest newUser = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         if (newUser.username() == null || newUser.password() == null || newUser.email() == null) {
             throw new ResponseException(ResponseException.Code.ClientError, "Error: Registration info not complete");
