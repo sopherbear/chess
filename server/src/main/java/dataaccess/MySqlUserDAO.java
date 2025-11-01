@@ -18,7 +18,7 @@ public class MySqlUserDAO implements UserDAO{
 
     public UserData getUser(String username) throws ResponseException{
         try (Connection conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, password, email FROM user_data WHERE id=?";
+            var statement = "SELECT username, password, email FROM user_data WHERE username=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -34,7 +34,7 @@ public class MySqlUserDAO implements UserDAO{
     }
 
     public void createUser(UserData userData) throws DataAccessException{
-        var statement = "INSERT INTO user_data (name, type, json) VALUES (?, ?, ?)";
+        var statement = "INSERT INTO user_data (username, password, email) VALUES (?, ?, ?)";
         String encryptedPassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
 
         var updateExecutor = new ExecuteDatabaseUpdates();
@@ -81,12 +81,11 @@ public class MySqlUserDAO implements UserDAO{
               `whiteUsername` varchar(256) DEFAULT NULL,
               `blackUsername` varchar(256) DEFAULT NULL,
               `gameName` varchar(256) NOT NULL,
-              `game`  TEXT NOT NULL,
+              `game` TEXT NOT NULL,
               PRIMARY KEY (`gameID`),
               INDEX(whiteUsername),
               INDEX(blackUsername),
-              INDEX(gameName),
-              INDEX(game)
+              INDEX(gameName)
               )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
 

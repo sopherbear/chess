@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +30,7 @@ public class ExecuteDatabaseUpdates{
                 ResultSet rs = ps.getGeneratedKeys();
                 if (rs.next()) {
                     var object = rs.getObject(1);
-                    if (object instanceof Integer){
+                    if (object instanceof BigInteger){
                         return rs.getInt(1);
                     }
                 }

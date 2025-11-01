@@ -12,7 +12,7 @@ public class MySqlAuthDAO implements AuthDAO{
 
     public AuthData getAuth(String authToken) throws ResponseException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT authToken, username FROM auth_data WHERE id=?";
+            var statement = "SELECT authToken, username FROM auth_data WHERE authToken=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authToken);
                 try (ResultSet rs = ps.executeQuery()) {
