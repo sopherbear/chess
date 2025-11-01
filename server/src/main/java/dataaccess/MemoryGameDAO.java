@@ -44,7 +44,7 @@ public class MemoryGameDAO implements GameDAO{
             updatedGame = new GameData(gameId, username, game.blackUsername(), game.gameName(), game.game());
         } else {
             if (game.blackUsername() != null) {
-                throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: White player already taken");
+                throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: Black player already taken");
             }
             updatedGame = new GameData(gameId, game.whiteUsername(), username, game.gameName(), game.game());
         }

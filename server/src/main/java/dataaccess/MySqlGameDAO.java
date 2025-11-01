@@ -50,6 +50,10 @@ public class MySqlGameDAO implements GameDAO{
     }
 
     public void addPlayer(int gameId, String playerColor, String username) throws ResponseException, DataAccessException {
+        var gameData = getGame(gameId);
+        if (gameData == null) {
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid gameID");
+        }
         var canAddPlayer = colorAvailable(gameId, playerColor);
         if (!canAddPlayer) {
             throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: Color already taken");
@@ -98,7 +102,7 @@ public class MySqlGameDAO implements GameDAO{
 
     private Boolean readPlayerColor(ResultSet rs, String column) throws SQLException {
         var playerColor = rs.getString(column);
-        return playerColor != null;
+        return playerColor == null;
     }
 
     private Boolean colorAvailable(int gameId, String playerColor) throws ResponseException{
