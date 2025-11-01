@@ -4,7 +4,6 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,7 +31,7 @@ public class MySqlGameDAO implements GameDAO{
         return new GameID(gameID);
     }
 
-    public GameData getGame(int gameId) throws ResponseException {
+    public GameData getGame(int gameId) throws ResponseException, DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game_data WHERE gameID=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -43,7 +42,7 @@ public class MySqlGameDAO implements GameDAO{
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
         }
         return null;
@@ -69,11 +68,9 @@ public class MySqlGameDAO implements GameDAO{
         var updateExecutor = new ExecuteDatabaseUpdates();
         updateExecutor.executeUpdate(command, username, gameId);
 
-
-
     }
 
-    public Collection<GameData> listGames() throws ResponseException{
+    public Collection<GameData> listGames() throws ResponseException, DataAccessException{
         var result = new ArrayList<GameData>();
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game_data";
@@ -84,7 +81,7 @@ public class MySqlGameDAO implements GameDAO{
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
         }
         return result;
@@ -105,7 +102,7 @@ public class MySqlGameDAO implements GameDAO{
         return playerColor == null;
     }
 
-    private Boolean colorAvailable(int gameId, String playerColor) throws ResponseException{
+    private Boolean colorAvailable(int gameId, String playerColor) throws ResponseException, DataAccessException{
         String wantedColumn;
         try (Connection conn = DatabaseManager.getConnection()) {
             String statement;
@@ -124,7 +121,7 @@ public class MySqlGameDAO implements GameDAO{
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
         }
         return null;

@@ -10,7 +10,7 @@ import model.*;
 public class MemoryUserDAO implements UserDAO{
     final private HashMap<String, UserData> users = new HashMap<>();
 
-    public UserData getUser(String username){
+    public UserData getUser(String username) throws DataAccessException{
         if (users.containsKey(username)){
             return users.get(username);
         }
@@ -27,7 +27,7 @@ public class MemoryUserDAO implements UserDAO{
         users.clear();
     }
 
-    public void verifyLogin(String username, String password) throws ResponseException{
+    public void verifyLogin(String username, String password) throws ResponseException, DataAccessException{
         var user = users.get(username);
         if (!user.password().equals(password)) {
             throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: incorrect password");

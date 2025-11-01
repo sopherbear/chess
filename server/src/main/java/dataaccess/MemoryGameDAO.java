@@ -17,7 +17,7 @@ public class MemoryGameDAO implements GameDAO{
         nextId = 1;
     }
 
-    public GameID createGame(String gameName) throws DataAccessException{
+    public GameID createGame(String gameName) throws DataAccessException, DataAccessException{
         var gameId = nextId;
         var game = new GameData(gameId, null, null, gameName, new ChessGame());
         allGames.put(gameId, game);
@@ -52,7 +52,7 @@ public class MemoryGameDAO implements GameDAO{
         allGames.put(gameId, updatedGame);
     }
 
-    public Collection<GameData> listGames() throws ResponseException{
+    public Collection<GameData> listGames() throws ResponseException, DataAccessException{
         Collection<GameData> games = new ArrayList<>();
         for (GameData game: allGames.values()) {
             games.add(game);

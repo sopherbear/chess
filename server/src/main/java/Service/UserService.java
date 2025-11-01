@@ -68,7 +68,6 @@ public class UserService {
         authDAO.deleteAuth(authToken);
     }
 
-
     private static String generateToken() {
         return UUID.randomUUID().toString();
     }

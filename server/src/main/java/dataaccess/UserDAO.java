@@ -4,8 +4,8 @@ import exception.ResponseException;
 import model.*;
 
 public interface UserDAO {
-    UserData getUser(String username) throws ResponseException;
+    UserData getUser(String username) throws ResponseException, DataAccessException;
     void createUser(UserData userData) throws DataAccessException;
     void deleteInfo() throws DataAccessException;
-    void verifyLogin(String username, String password) throws ResponseException;
+    void verifyLogin(String username, String password) throws ResponseException, DataAccessException;
 }

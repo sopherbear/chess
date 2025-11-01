@@ -8,7 +8,7 @@ public class MemoryAuthDAO implements AuthDAO{
     final private HashMap<String, AuthData> allAuths = new HashMap<>();
 
 
-    public AuthData getAuth(String authToken) throws ResponseException {
+    public AuthData getAuth(String authToken) throws ResponseException, DataAccessException {
         if (allAuths.containsKey(authToken)){
             return allAuths.get(authToken);
         }

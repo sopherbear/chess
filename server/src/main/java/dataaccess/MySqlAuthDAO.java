@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class MySqlAuthDAO implements AuthDAO{
 
-    public AuthData getAuth(String authToken) throws ResponseException {
+    public AuthData getAuth(String authToken) throws ResponseException, DataAccessException{
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT authToken, username FROM auth_data WHERE authToken=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -21,7 +21,7 @@ public class MySqlAuthDAO implements AuthDAO{
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
         }
         return null;

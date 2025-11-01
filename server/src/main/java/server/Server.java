@@ -8,6 +8,7 @@ import exception.ResponseException;
 import Service.*;
 import model.*;
 
+import javax.xml.crypto.Data;
 
 
 public class Server {
@@ -39,6 +40,7 @@ public class Server {
                 .post("/game", this::createGame)
                 .put("/game", this::joinGame)
                 .exception(ResponseException.class, this::exceptionHandler)
+//                .exception(DataAccessException.class, this::dataAccessHandler)
 
         ;
 
@@ -55,6 +57,10 @@ public class Server {
         ctx.status(ex.toHttpStatusCode());
         ctx.json(ex.toJson());
     }
+
+//    private void dataAccessHandler(DataAccessException ex, Context ctx) {
+//        ctx.status(500);
+//    }
 
     private void clear(Context ctx) throws DataAccessException{
         userService.clear();
@@ -122,7 +128,7 @@ public class Server {
         ctx.status(200);
     }
 
-    private void listGames(Context ctx) throws ResponseException{
+    private void listGames(Context ctx) throws ResponseException, DataAccessException {
         String authToken = ctx.header("authorization");
         if (authToken == null) {
             throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");

@@ -16,7 +16,7 @@ public class MySqlUserDAO implements UserDAO{
         configureDatabase();
     }
 
-    public UserData getUser(String username) throws ResponseException{
+    public UserData getUser(String username) throws ResponseException, DataAccessException{
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, password, email FROM user_data WHERE username=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -27,7 +27,7 @@ public class MySqlUserDAO implements UserDAO{
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
         }
         return null;
@@ -48,7 +48,7 @@ public class MySqlUserDAO implements UserDAO{
         updateExecutor.executeUpdate(statement);
     }
 
-    public void verifyLogin(String username, String password) throws ResponseException{
+    public void verifyLogin(String username, String password) throws ResponseException, DataAccessException{
         var user = getUser(username);
 
         var correctPassword = BCrypt.checkpw(password, user.password());

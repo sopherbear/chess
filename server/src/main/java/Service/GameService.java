@@ -37,7 +37,7 @@ public class GameService {
         gameDAO.addPlayer(gameRequest.gameID(), gameRequest.playerColor(), auth.username());
     }
 
-    public GamesList listGames(String authToken) throws ResponseException{
+    public GamesList listGames(String authToken) throws ResponseException, DataAccessException{
         var auth = authDAO.getAuth(authToken);
         if (auth == null) {
             throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found");
