@@ -40,7 +40,7 @@ public class Server {
                 .post("/game", this::createGame)
                 .put("/game", this::joinGame)
                 .exception(ResponseException.class, this::exceptionHandler)
-//                .exception(DataAccessException.class, this::dataAccessHandler)
+                .exception(DataAccessException.class, this::dataAccessHandler)
 
         ;
 
@@ -58,9 +58,10 @@ public class Server {
         ctx.json(ex.toJson());
     }
 
-//    private void dataAccessHandler(DataAccessException ex, Context ctx) {
-//        ctx.status(500);
-//    }
+    private void dataAccessHandler(DataAccessException ex, Context ctx) {
+        ctx.status(500);
+        ctx.json(ex.toJson());
+    }
 
     private void clear(Context ctx) throws DataAccessException{
         userService.clear();
