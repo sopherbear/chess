@@ -64,18 +64,18 @@ public class UserServiceTest {
     }
 
 
-//    @Test
-//    void logout() throws ResponseException, DataAccessException {
-//        authDAO.createAuth(new AuthData("jellybean", "Djo"));
-//        authDAO.createAuth(new AuthData("spinach", "popeye"));
-//
-//        service.logout("jellybean");
-//        assertTrue(authDAO.getTableCount() == 1);
-//
-//        assertThrows(ResponseException.class, () ->
-//                service.logout("jellybean"));
-//
-//    }
+    @Test
+    void logout() throws ResponseException, DataAccessException {
+        authDAO.createAuth(new AuthData("jellybean", "Djo"));
+        authDAO.createAuth(new AuthData("spinach", "popeye"));
+
+        service.logout("jellybean");
+        assertTrue(authDAO.getTableCount() == 1);
+
+        assertThrows(ResponseException.class, () ->
+                service.logout("jellybean"));
+
+    }
 
 
 }
