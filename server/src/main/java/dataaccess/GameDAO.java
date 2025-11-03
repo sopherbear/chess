@@ -11,4 +11,5 @@ public interface GameDAO {
     GameData getGame(int gameId) throws ResponseException, DataAccessException;
     void addPlayer(int gameId, String playerColor, String username) throws ResponseException, DataAccessException;
     Collection<GameData> listGames() throws ResponseException, DataAccessException;
+    int getTableCount() throws ResponseException; // For testing
 }

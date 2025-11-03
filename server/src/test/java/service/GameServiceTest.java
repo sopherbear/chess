@@ -28,7 +28,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void createGame() throws ResponseException, DataAccessException {
+    void createGamePositive() throws ResponseException, DataAccessException {
         authDAO.createAuth(new AuthData("starshine", "Geodude"));
         var name = new GameName( "UberSuperFunGame");
         var id = service.createGame("starshine", name);

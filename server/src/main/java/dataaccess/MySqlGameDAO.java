@@ -102,6 +102,10 @@ public class MySqlGameDAO implements GameDAO{
         return playerColor == null;
     }
 
+    private int getCount(ResultSet rs) throws SQLException{
+        return rs.getInt(1);
+    }
+
     private Boolean colorAvailable(int gameId, String playerColor) throws ResponseException, DataAccessException{
         String wantedColumn;
         try (Connection conn = DatabaseManager.getConnection()) {
@@ -127,4 +131,19 @@ public class MySqlGameDAO implements GameDAO{
         return null;
     }
 
+    public int getTableCount() throws ResponseException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT COUNT(*) FROM game_data";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return getCount(rs);
+                    }
+                }
+            }
+        } catch (Throwable e) {
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return -1;
+    }
 }

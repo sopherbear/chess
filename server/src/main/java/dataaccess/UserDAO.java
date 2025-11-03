@@ -8,4 +8,5 @@ public interface UserDAO {
     void createUser(UserData userData) throws DataAccessException;
     void deleteInfo() throws DataAccessException;
     void verifyLogin(String username, String password) throws ResponseException, DataAccessException;
+    int getTableCount() throws ResponseException; // For testing
 }

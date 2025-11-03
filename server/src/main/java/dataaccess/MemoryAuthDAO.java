@@ -29,7 +29,7 @@ public class MemoryAuthDAO implements AuthDAO{
         allAuths.remove(authToken);
     }
 
-    public int mapLen(){
+    public int getTableCount() throws ResponseException{
         return allAuths.size();
     }
 }

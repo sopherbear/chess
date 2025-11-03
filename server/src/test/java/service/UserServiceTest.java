@@ -26,15 +26,15 @@ public class UserServiceTest {
 
 
     @Test
-    void clear() throws DataAccessException{
+    void clear() throws DataAccessException, ResponseException{
         userDAO.createUser(new UserData("Sophie", "1", "email"));
         gameDAO.createGame("coolGame");
         authDAO.createAuth(new AuthData("slfdklj", "jerry"));
 
         service.clear();
-//        assertTrue(userDAO.mapLen()== 0);
-//        assertTrue(authDAO.mapLen()== 0);
-//        assertTrue(gameDAO.mapLen()== 0);
+        assertTrue(userDAO.getTableCount()== 0);
+        assertTrue(authDAO.getTableCount()== 0);
+        assertTrue(gameDAO.getTableCount()== 0);
     }
 
 
@@ -70,7 +70,7 @@ public class UserServiceTest {
         authDAO.createAuth(new AuthData("spinach", "popeye"));
 
         service.logout("jellybean");
-        assertTrue(authDAO.mapLen() == 1);
+        assertTrue(authDAO.getTableCount() == 1);
 
         assertThrows(ResponseException.class, () ->
                 service.logout("jellybean"));

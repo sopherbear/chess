@@ -60,7 +60,7 @@ public class MemoryGameDAO implements GameDAO{
         return games;
     }
 
-    public int mapLen(){
+    public int getTableCount() throws ResponseException{
         return allGames.size();
     }
 

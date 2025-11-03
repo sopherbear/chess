@@ -34,7 +34,7 @@ public class MemoryUserDAO implements UserDAO{
         }
     }
 
-    public int mapLen(){
+    public int getTableCount() throws ResponseException{
         return users.size();
     }
 }
