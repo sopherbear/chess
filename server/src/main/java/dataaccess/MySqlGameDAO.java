@@ -45,7 +45,7 @@ public class MySqlGameDAO implements GameDAO{
         } catch (Throwable e) {
             throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
         }
-        return null;
+        throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid gameID");
     }
 
     public void addPlayer(int gameId, String playerColor, String username) throws ResponseException, DataAccessException {
