@@ -57,10 +57,6 @@ public class ChessPiece implements Cloneable{
         return new PieceMoveCalculator(board, myPosition).pieceMoves(board, myPosition);
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s%s", pieceColor, type);
-    }
 
     @Override
     public ChessPiece clone() {
@@ -72,20 +68,26 @@ public class ChessPiece implements Cloneable{
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
+    public String toString() {
+        return String.format("%s%s", pieceColor, type);
+    }
+
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) {
             return false;
         }
 
-        if (obj == this) {
+        if (object == this) {
             return true;
         }
 
-        if (obj.getClass() != this.getClass()) {
+        if (object.getClass() != this.getClass()) {
             return false;
         }
 
-        ChessPiece p = (ChessPiece)obj;
+        ChessPiece p = (ChessPiece)object;
 
         return (this.pieceColor.equals(p.pieceColor) &&
                 this.type.equals(p.type));
