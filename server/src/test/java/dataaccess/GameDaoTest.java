@@ -2,11 +2,9 @@ package dataaccess;
 
 import Service.UserService;
 import exception.ResponseException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.xml.crypto.Data;
 
 import java.util.List;
 
@@ -138,7 +136,7 @@ public class GameDaoTest {
     }
 
     @Test
-    void getTableCountNegative() throws ResponseException, DataAccessException {
+    void getTableCountNegative() throws DataAccessException {
         deleteGameTable();
 
         assertThrows(ResponseException.class, () ->
