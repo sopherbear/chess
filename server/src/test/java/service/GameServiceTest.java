@@ -18,26 +18,26 @@ public class GameServiceTest {
     private static MemoryUserDAO userDAO = new MemoryUserDAO();
     private static MemoryGameDAO gameDAO = new MemoryGameDAO();
     private static MemoryAuthDAO authDAO = new MemoryAuthDAO();
-    static final UserService userService = new UserService(authDAO, userDAO, gameDAO);
+    static final UserService USER_SERVICE = new UserService(authDAO, userDAO, gameDAO);
 
-    static final GameService service = new GameService(authDAO, gameDAO);
+    static final GameService SERVICE = new GameService(authDAO, gameDAO);
 
     @BeforeEach
-    void clearTests() throws ResponseException, DataAccessException {
-        userService.clear();
+    void clearTests() throws DataAccessException {
+        USER_SERVICE.clear();
     }
 
     @Test
     void createGamePositive() throws ResponseException, DataAccessException {
         authDAO.createAuth(new AuthData("starshine", "Geodude"));
         var name = new GameName( "UberSuperFunGame");
-        var id = service.createGame("starshine", name);
+        var id = SERVICE.createGame("starshine", name);
 
         assertTrue(id.gameID() > 0);
 
         var name2 = new GameName(null);
         assertThrows(ResponseException.class, () ->
-                service.createGame(null, name2));
+                SERVICE.createGame(null, name2));
     }
 
     @Test
@@ -46,22 +46,22 @@ public class GameServiceTest {
         gameDAO.createGame("Charlie Brown");
         gameDAO.createGame("Snoop Dogg");
         authDAO.createAuth(new AuthData("starshine", "Geodude"));
-        var games = service.listGames("starshine");
+        var games = SERVICE.listGames("starshine");
         assertTrue(games != null);
 
         assertThrows(ResponseException.class, () ->
-                service.listGames("superfast jellyfish"));
+                SERVICE.listGames("superfast jellyfish"));
     }
 
     @Test
     void joinGame() throws ResponseException, DataAccessException {
         authDAO.createAuth(new AuthData("starshine", "Geodude"));
         gameDAO.createGame("Jeffrey");
-        service.joinGame("starshine", new GameRequest(1, "WHITE"));
+        SERVICE.joinGame("starshine", new GameRequest(1, "WHITE"));
 
         assertTrue(gameDAO.getGame(1).whiteUsername() == "Geodude");
         assertThrows(ResponseException.class, () ->
-                service.listGames("superfast jellyfish"));
+                SERVICE.listGames("superfast jellyfish"));
 
     }
 }
