@@ -143,9 +143,9 @@ public class MySqlGameDAO implements GameDAO{
                 }
             }
         } catch (Throwable e) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read game data: %s", e.getMessage()));
         }
-        return -1;
+        throw new ResponseException(ResponseException.Code.ServerError, "Error: Unable to count game data: %s");
     }
 
 }

@@ -123,9 +123,9 @@ public class MySqlUserDAO implements UserDAO{
                 }
             }
         } catch (Throwable e) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read user data: %s", e.getMessage()));
         }
-        return -1;
+        throw new ResponseException(ResponseException.Code.ServerError, "Error: Unable to count user data: %s");
     }
 
     private int getCount(ResultSet rs) throws SQLException{

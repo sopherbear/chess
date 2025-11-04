@@ -65,9 +65,9 @@ public class MySqlAuthDAO implements AuthDAO{
                 }
             }
         } catch (Throwable e) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read auth data: %s", e.getMessage()));
         }
-        return -1;
+        throw new ResponseException(ResponseException.Code.ServerError, "Error: Unable to count auth data: %s");
     }
 
     private int getCount(ResultSet rs) throws SQLException{
