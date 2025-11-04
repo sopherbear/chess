@@ -8,7 +8,6 @@ import java.util.Map;
 public class ResponseException extends Exception {
 
     public enum Code {
-        ServerError,
         ClientError,
         AlreadyTakenError,
         UnauthorizedError,
@@ -33,7 +32,6 @@ public class ResponseException extends Exception {
 
     public int toHttpStatusCode() {
         return switch (code) {
-            case ServerError -> 500;
             case ClientError -> 400;
             case UnauthorizedError -> 401;
             case AlreadyTakenError -> 403;
