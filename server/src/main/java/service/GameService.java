@@ -1,4 +1,4 @@
-package Service;
+package service;
 
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;

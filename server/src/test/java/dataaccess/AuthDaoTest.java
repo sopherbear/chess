@@ -1,12 +1,13 @@
-package Service;
+package dataaccess;
 
-import dataaccess.*;
+import service.UserService;
 import exception.ResponseException;
 import model.AuthData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -15,7 +16,7 @@ public class AuthDaoTest {
     private static MemoryUserDAO userDAO = new MemoryUserDAO();
     private static AuthDAO authMemory = new MemoryAuthDAO();
     private static AuthDAO authSql = new MySqlAuthDAO();
-    private static  UserService userService = new UserService(authSql, userDAO, gameDAO);
+    private static UserService userService = new UserService(authSql, userDAO, gameDAO);
     private static List<AuthDAO> authDAOs = List.of(authSql, authMemory);
 
 

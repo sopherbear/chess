@@ -1,7 +1,5 @@
 package service;
 
-import Service.UserService;
-import Service.GameService;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;

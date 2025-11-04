@@ -1,4 +1,4 @@
-package Service;
+package service;
 
 import dataaccess.*;
 import model.LoginRequest;
@@ -8,7 +8,6 @@ import model.AuthData;
 import exception.ResponseException;
 import dataaccess.DataAccessException;
 
-import javax.xml.crypto.Data;
 import java.util.UUID;
 
 

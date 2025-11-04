@@ -2,7 +2,6 @@ package service;
 
 import dataaccess.DataAccessException;
 import model.*;
-import Service.UserService;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
@@ -17,11 +16,11 @@ public class UserServiceTest {
     private static MemoryUserDAO userDAO = new MemoryUserDAO();
     private static MemoryGameDAO gameDAO = new MemoryGameDAO();
     private static MemoryAuthDAO authDAO = new MemoryAuthDAO();
-    static final UserService Service = new UserService(authDAO, userDAO, gameDAO);
+    static final UserService SERVICE = new UserService(authDAO, userDAO, gameDAO);
 
     @BeforeEach
     void clearTests() throws DataAccessException {
-        Service.clear();
+        SERVICE.clear();
     }
 
 
@@ -31,7 +30,7 @@ public class UserServiceTest {
         gameDAO.createGame("coolGame");
         authDAO.createAuth(new AuthData("slfdklj", "jerry"));
 
-        Service.clear();
+        SERVICE.clear();
         assertTrue(userDAO.getTableCount()== 0);
         assertTrue(authDAO.getTableCount()== 0);
         assertTrue(gameDAO.getTableCount()== 0);
@@ -41,13 +40,13 @@ public class UserServiceTest {
     @Test
     void register() throws ResponseException, DataAccessException {
         var registerRequest = new RegisterRequest("Sophie", "badPassword", "nonemail@email.com");
-        var auth = Service.register(registerRequest);
+        var auth = SERVICE.register(registerRequest);
 
         assertTrue(auth.username().equals("Sophie"));
 
         var registerRequest2 = new RegisterRequest("Sophie", "anotherPassword", "nonemail@email.com");
         assertThrows(ResponseException.class, () ->
-                Service.register(registerRequest2));
+                SERVICE.register(registerRequest2));
     }
 
 
@@ -56,10 +55,10 @@ public class UserServiceTest {
         var loginRequest = new LoginRequest("Sophie", "badPassword");
 
         assertThrows(ResponseException.class, () ->
-                        Service.login(loginRequest));
+                        SERVICE.login(loginRequest));
 
         userDAO.createUser(new UserData("Sophie", "badPassword", "email"));
-        var auth = Service.login(loginRequest);
+        var auth = SERVICE.login(loginRequest);
         assertTrue(auth.username().equals("Sophie"));
     }
 
@@ -69,11 +68,11 @@ public class UserServiceTest {
         authDAO.createAuth(new AuthData("jellybean", "Djo"));
         authDAO.createAuth(new AuthData("spinach", "popeye"));
 
-        Service.logout("jellybean");
+        SERVICE.logout("jellybean");
         assertTrue(authDAO.getTableCount() == 1);
 
         assertThrows(ResponseException.class, () ->
-                Service.logout("jellybean"));
+                SERVICE.logout("jellybean"));
 
     }
 
