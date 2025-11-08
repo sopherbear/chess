@@ -34,5 +34,22 @@ public class ResponseException extends Exception {
             case AlreadyTakenError -> 403;
         };
     }
+
+    public static ResponseException fromJson(String json) {
+        var map = new Gson().fromJson(json, HashMap.class);
+        var status = Code.valueOf(map.get("status").toString());
+        String message = map.get("message").toString();
+        return new ResponseException(status, message);
+    }
+
+        public static Code fromHttpStatusCode(int httpStatusCode) {
+        return switch (httpStatusCode) {
+            case 500 -> Code.ServerError;
+            case 400 -> Code.ClientError;
+            case 401 -> Code.UnauthorizedError;
+            case 403 -> Code.AlreadyTakenError;
+            default -> throw new IllegalArgumentException("Unknown HTTP status code: " + httpStatusCode);
+        };
+    }
 }
 
