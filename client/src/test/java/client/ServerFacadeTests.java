@@ -72,4 +72,12 @@ public class ServerFacadeTests {
                 facade.login(new LoginRequest( "Scam Likely", "HermieUnworthy")));
     }
 
+    @Test
+    public void testLogoutPositive() throws ResponseException {
+        var authData = facade.register(new RegisterRequest("Noodle", "guitar", "kong.com"));
+        facade.logout(authData.authToken());
+        var newAuth = facade.login(new LoginRequest("Noodle", "guitar"));
+        assertTrue(! authData.authToken().equals(newAuth.username()));
+    }
+
 }
