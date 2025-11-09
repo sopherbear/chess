@@ -1,6 +1,7 @@
 package client;
 
 import exception.ResponseException;
+import model.LoginRequest;
 import model.RegisterRequest;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -57,7 +58,12 @@ public class ServerFacadeTests {
                 facade.register(new RegisterRequest("Chris", "somedude", "notreal@email.com")));
     }
 
-//    @Test
-//    public void
+    @Test
+    public void testLoginPositive() throws ResponseException{
+        var authData = facade.register(new RegisterRequest("Noodle", "guitar", "kong.com"));
+        facade.logout(authData.authToken());
+        var newAuth = facade.login(new LoginRequest("Noodle", "guitar"));
+        assertTrue(newAuth.username().equals("Noodle"));
+    }
 
 }
