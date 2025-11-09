@@ -3,6 +3,7 @@ package model;
 import com.google.gson.Gson;
 
 import java.util.Collection;
+import java.util.List;
 
 public record GamesList(Collection<GameData> games) {
 
@@ -12,5 +13,9 @@ public record GamesList(Collection<GameData> games) {
 
     public int getSize() {
         return games.size();
+    }
+
+    public GameData getFirstGameData() {
+        return ((List<GameData>)games).getFirst();
     }
 }

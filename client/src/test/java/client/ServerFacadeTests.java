@@ -2,6 +2,7 @@ package client;
 
 import exception.ResponseException;
 import model.GameName;
+import model.GameRequest;
 import model.LoginRequest;
 import model.RegisterRequest;
 import org.junit.jupiter.api.*;
@@ -112,5 +113,14 @@ public class ServerFacadeTests {
     public void testCreateGameNegative() throws ResponseException {
         assertThrows(ResponseException.class, ()->
                 facade.createGame("jellyBeans", new GameName("M1A1")));
+    }
+
+    @Test
+    public void testJoinGamePositive() throws ResponseException {
+        var authData = facade.register(new RegisterRequest("Noodle", "guitar", "kong.com"));
+        var newGame = facade.createGame(authData.authToken(), new GameName("M1A1"));
+        facade.joinGame(authData.authToken(), new GameRequest(1, "WHITE"));
+        var games = facade.listGames(authData.authToken());
+        assertTrue(games.getFirstGameData().whiteUsername().equals("Noodle"));
     }
 }
