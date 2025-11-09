@@ -39,16 +39,11 @@ public class Server {
                 .put("/game", this::joinGame)
                 .exception(ResponseException.class, this::exceptionHandler)
                 .exception(DataAccessException.class, this::dataAccessHandler)
-
         ;
 
         } catch (Throwable ex){
             System.out.printf("Unable to start server: %s%n", ex.getMessage());
         }
-
-        // Register your endpoints and exception handlers here.
-
-
     }
 
     private void exceptionHandler(ResponseException ex, Context ctx) {

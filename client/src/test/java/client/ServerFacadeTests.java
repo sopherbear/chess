@@ -1,21 +1,33 @@
 package client;
 
+import exception.ResponseException;
+import model.RegisterRequest;
 import org.junit.jupiter.api.*;
 import server.Server;
 import facade.ServerFacade;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class ServerFacadeTests {
 
     private static Server server;
+    static ServerFacade facade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
+        String url = String.format("http://localhost:%d", port);
+        facade = new ServerFacade(url);
+    }
 
-//       TODO: add code to clear database
+    @BeforeEach
+    void clearAllTables() throws ResponseException {
+        facade.clear();
     }
 
     @AfterAll
@@ -24,9 +36,23 @@ public class ServerFacadeTests {
     }
 
 
+//    @Test
+//    public void testClearPositive() {
+//
+//        Assertions.assertTrue(true);
+//    }
+
     @Test
-    public void sampleTest() {
-        Assertions.assertTrue(true);
+    public void testRegisterPositive() throws ResponseException{
+        var authData = facade.register(new RegisterRequest("Noodle", "guitar", "kong.com"));
+        assertTrue(authData.username().equals("Noodle"));
+    }
+
+    @Test
+    public void testRegisterNegative() throws ResponseException{
+        facade.register(new RegisterRequest("Chris", "singer", "musicofspheres@gmail.com"));
+        assertThrows(ResponseException.class, ()->
+                facade.register(new RegisterRequest("Chris", "somedude", "notreal@email.com")));
     }
 
 }
