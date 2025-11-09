@@ -80,4 +80,10 @@ public class ServerFacadeTests {
         assertTrue(! authData.authToken().equals(newAuth.username()));
     }
 
+    @Test
+    public void testLogoutNegative() throws ResponseException {
+        assertThrows(ResponseException.class, () ->
+                facade.logout("jellybean"));
+    }
+
 }
