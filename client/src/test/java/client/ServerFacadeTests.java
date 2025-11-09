@@ -36,11 +36,13 @@ public class ServerFacadeTests {
     }
 
 
-//    @Test
-//    public void testClearPositive() {
-//
-//        Assertions.assertTrue(true);
-//    }
+    @Test
+    public void testClearPositive() throws ResponseException{
+        facade.register(new RegisterRequest("Noodle", "guitar", "kong.com"));
+        facade.clear();
+        var authData = facade.register(new RegisterRequest("Noodle", "guitar", "kong.com"));
+        Assertions.assertTrue(authData.username().equals("Noodle"));
+    }
 
     @Test
     public void testRegisterPositive() throws ResponseException{
@@ -54,5 +56,8 @@ public class ServerFacadeTests {
         assertThrows(ResponseException.class, ()->
                 facade.register(new RegisterRequest("Chris", "somedude", "notreal@email.com")));
     }
+
+//    @Test
+//    public void
 
 }
