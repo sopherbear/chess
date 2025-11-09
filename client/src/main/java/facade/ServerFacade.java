@@ -47,8 +47,8 @@ public class ServerFacade {
         return handleResponse(response, GamesList.class);
     }
 
-    public GameID createGame(String authToken) throws ResponseException{
-        var request  = buildRequest("POST", "/game", null, authToken);
+    public GameID createGame(String authToken, GameName gameName) throws ResponseException{
+        var request  = buildRequest("POST", "/game", gameName, authToken);
         var response = sendRequest(request);
         return handleResponse(response, GameID.class);
     }

@@ -1,6 +1,7 @@
 package client;
 
 import exception.ResponseException;
+import model.GameName;
 import model.LoginRequest;
 import model.RegisterRequest;
 import org.junit.jupiter.api.*;
@@ -86,4 +87,12 @@ public class ServerFacadeTests {
                 facade.logout("jellybean"));
     }
 
+
+    @Test
+    public void testListGamePositive() throws ResponseException {
+        var authData = facade.register(new RegisterRequest("Noodle", "guitar", "kong.com"));
+        facade.createGame(authData.authToken(), new GameName("M1A1"));
+        var games = facade.listGames(authData.authToken());
+        assertTrue(games.getSize() == 1);
+    }
 }
