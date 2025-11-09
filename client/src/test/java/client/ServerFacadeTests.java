@@ -87,7 +87,6 @@ public class ServerFacadeTests {
                 facade.logout("jellybean"));
     }
 
-
     @Test
     public void testListGamePositive() throws ResponseException {
         var authData = facade.register(new RegisterRequest("Noodle", "guitar", "kong.com"));
@@ -95,4 +94,11 @@ public class ServerFacadeTests {
         var games = facade.listGames(authData.authToken());
         assertTrue(games.getSize() == 1);
     }
+
+    @Test
+    public void testListGameNegative() throws ResponseException {
+       assertThrows(ResponseException.class, ()->
+               facade.listGames("jellybeans"));
+    }
+
 }
