@@ -118,9 +118,15 @@ public class ServerFacadeTests {
     @Test
     public void testJoinGamePositive() throws ResponseException {
         var authData = facade.register(new RegisterRequest("Noodle", "guitar", "kong.com"));
-        var newGame = facade.createGame(authData.authToken(), new GameName("M1A1"));
+        facade.createGame(authData.authToken(), new GameName("M1A1"));
         facade.joinGame(authData.authToken(), new GameRequest(1, "WHITE"));
         var games = facade.listGames(authData.authToken());
         assertTrue(games.getFirstGameData().whiteUsername().equals("Noodle"));
+    }
+
+    @Test
+    public void testJoinGameNegative() throws ResponseException {
+        assertThrows(ResponseException.class, ()->
+                facade.joinGame("jellyBeans", new GameRequest(1, "WHITE")));
     }
 }
