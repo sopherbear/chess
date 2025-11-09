@@ -66,4 +66,10 @@ public class ServerFacadeTests {
         assertTrue(newAuth.username().equals("Noodle"));
     }
 
+    @Test
+    public void testLoginNegative() throws ResponseException {
+        assertThrows(ResponseException.class, ()->
+                facade.login(new LoginRequest( "Scam Likely", "HermieUnworthy")));
+    }
+
 }
