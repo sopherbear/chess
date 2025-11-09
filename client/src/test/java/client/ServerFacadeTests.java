@@ -108,4 +108,9 @@ public class ServerFacadeTests {
         assertTrue(newGame.gameID() == 1);
     }
 
+    @Test
+    public void testCreateGameNegative() throws ResponseException {
+        assertThrows(ResponseException.class, ()->
+                facade.createGame("jellyBeans", new GameName("M1A1")));
+    }
 }
