@@ -101,4 +101,11 @@ public class ServerFacadeTests {
                facade.listGames("jellybeans"));
     }
 
+    @Test
+    public void testCreateGamePositive() throws ResponseException {
+        var authData = facade.register(new RegisterRequest("Noodle", "guitar", "kong.com"));
+        var newGame = facade.createGame(authData.authToken(), new GameName("M1A1"));
+        assertTrue(newGame.gameID() == 1);
+    }
+
 }
