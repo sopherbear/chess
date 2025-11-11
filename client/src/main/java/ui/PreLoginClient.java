@@ -22,7 +22,7 @@ public class PreLoginClient {
     }
 
     public void run() {
-        System.out.println(SET_TEXT_COLOR_CYAN + "Welcome to Sophie's Chess Program!\n");
+        System.out.println(SET_TEXT_COLOR_CYAN + RESET_TEXT_ITALIC + "Welcome to Sophie's Chess Program!\n");
         System.out.print(RESET_TEXT_COLOR + help());
 
         Scanner scanner = new Scanner(System.in);
@@ -67,7 +67,7 @@ public class PreLoginClient {
         if (params.length == 2) {
             var loginRequest = new LoginRequest(params[0], params[1]);
             server.login(loginRequest);
-            return String.format("Welcome back, %s!", params[0]);
+            return String.format("Welcome back, %s!\n", params[0]);
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected <USERNAME> <PASSWORD>");
     }
@@ -77,7 +77,7 @@ public class PreLoginClient {
             state = State.POSTLOGIN;
             var registerRequest = new RegisterRequest(params[0], params[1], params[2]);
             server.register(registerRequest);
-            return String.format("Welcome, %s. Your account has been created.", params[0]);
+            return String.format("Welcome, %s. Your account has been created. \n", params[0]);
 
             //TODO: handle the authToken
         }
@@ -89,9 +89,8 @@ public class PreLoginClient {
                 RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "register <USERNAME> <PASSWORD> <EMAIL>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - register a new user\n"
                 + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "login <USERNAME> <PASSWORD>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - log in to existing account\n"
                 + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess\n"
-                + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - print possible actions\n";
+                + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";
 
-        return helpMenu;
-//        return "hello";
+                return helpMenu;
     }
 }
