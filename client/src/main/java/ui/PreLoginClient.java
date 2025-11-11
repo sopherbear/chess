@@ -22,7 +22,7 @@ public class PreLoginClient {
     }
 
     public void run() {
-        System.out.println(SET_TEXT_COLOR_NEON_PURPLE + "Welcome to Sophie's Chess Program!\n");
+        System.out.println(SET_TEXT_COLOR_CYAN + "Welcome to Sophie's Chess Program!\n");
         System.out.print(RESET_TEXT_COLOR + help());
 
         Scanner scanner = new Scanner(System.in);
@@ -34,7 +34,7 @@ public class PreLoginClient {
 
             try {
                 result = eval(line);
-                System.out.print(SET_TEXT_COLOR_CYAN + result);
+                System.out.print(SET_TEXT_COLOR_NEON_PURPLE + result);
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -44,7 +44,7 @@ public class PreLoginClient {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_MAGENTA);
+        System.out.print("\n" + RESET_TEXT_COLOR + ">>> ");
     }
 
     public String eval(String input) {
@@ -86,10 +86,10 @@ public class PreLoginClient {
 
     public String help() {
         String helpMenu =
-                SET_TEXT_COLOR_NEON_PURPLE + "register <USERNAME> <PASSWORD> <EMAIL>" + SET_TEXT_ITALIC + " - register a new user\n"
-                + SET_TEXT_COLOR_NEON_PURPLE + "login <USERNAME> <PASSWORD>" + SET_TEXT_ITALIC + " - log in to existing account\n"
-                + SET_TEXT_COLOR_NEON_PURPLE + "quit" + SET_TEXT_ITALIC + " - exit chess\n"
-                + SET_TEXT_COLOR_NEON_PURPLE + "help" + SET_TEXT_ITALIC + " - print possible actions\n";
+                RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "register <USERNAME> <PASSWORD> <EMAIL>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - register a new user\n"
+                + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "login <USERNAME> <PASSWORD>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - log in to existing account\n"
+                + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess\n"
+                + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - print possible actions\n";
 
         return helpMenu;
 //        return "hello";
