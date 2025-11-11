@@ -1,14 +1,9 @@
-import chess.*;
 import clientstate.State;
-import ui.PreLoginClient;
-import ui.PostLoginClient;
+import ui.Client;
 
 import static ui.EscapeSequences.WHITE_BISHOP;
 
 public class Main {
-    private State state = State.PRELOGIN;
-    private String authToken = null;
-    private String user = null;
 
     public static void main(String[] args) {
 //        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
@@ -21,7 +16,7 @@ public class Main {
         }
 
         try {
-            new PreLoginClient(serverUrl).run();
+            new Client(serverUrl).run();
 
         } catch (Throwable ex) {
             System.out.printf("Unable to start server: %s%n", ex.getMessage());

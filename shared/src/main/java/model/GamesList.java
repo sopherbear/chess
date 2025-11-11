@@ -18,4 +18,6 @@ public record GamesList(Collection<GameData> games) {
     public GameData getFirstGameData() {
         return ((List<GameData>)games).getFirst();
     }
+
+
 }
