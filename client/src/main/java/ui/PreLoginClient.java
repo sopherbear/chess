@@ -41,6 +41,7 @@ public class PreLoginClient {
             }
         }
         System.out.println();
+
     }
 
     private void printPrompt() {
@@ -67,6 +68,7 @@ public class PreLoginClient {
         if (params.length == 2) {
             var loginRequest = new LoginRequest(params[0], params[1]);
             server.login(loginRequest);
+            state = State.POSTLOGIN;
             return String.format("Welcome back, %s!\n", params[0]);
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected <USERNAME> <PASSWORD>");
@@ -74,9 +76,9 @@ public class PreLoginClient {
 
     public String register(String... params) throws ResponseException{
         if (params.length == 3) {
-            state = State.POSTLOGIN;
             var registerRequest = new RegisterRequest(params[0], params[1], params[2]);
             server.register(registerRequest);
+            state = State.POSTLOGIN;
             return String.format("Welcome, %s. Your account has been created. \n", params[0]);
 
             //TODO: handle the authToken
@@ -92,5 +94,9 @@ public class PreLoginClient {
                 + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";
 
                 return helpMenu;
+    }
+
+    public State getState() {
+        return state;
     }
 }

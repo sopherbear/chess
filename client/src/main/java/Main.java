@@ -1,11 +1,14 @@
 import chess.*;
 import clientstate.State;
 import ui.PreLoginClient;
+import ui.PostLoginClient;
 
 import static ui.EscapeSequences.WHITE_BISHOP;
 
 public class Main {
     private State state = State.PRELOGIN;
+    private String authToken = null;
+    private String user = null;
 
     public static void main(String[] args) {
 //        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
