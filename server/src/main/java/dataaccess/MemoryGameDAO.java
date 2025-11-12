@@ -30,7 +30,7 @@ public class MemoryGameDAO implements GameDAO{
             return allGames.get(gameId);
         }
         else {
-           throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid gameID");
+           throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid gameID\n");
         }
     }
 
@@ -39,12 +39,12 @@ public class MemoryGameDAO implements GameDAO{
         GameData updatedGame;
         if (playerColor.equals("WHITE")) {
             if (game.whiteUsername() != null) {
-                throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: White player already taken");
+                throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: White player already taken\n");
             }
             updatedGame = new GameData(gameId, username, game.blackUsername(), game.gameName(), game.game());
         } else {
             if (game.blackUsername() != null) {
-                throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: Black player already taken");
+                throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: Black player already taken\n");
             }
             updatedGame = new GameData(gameId, game.whiteUsername(), username, game.gameName(), game.game());
         }

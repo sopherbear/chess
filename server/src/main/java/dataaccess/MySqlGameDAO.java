@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,7 +43,7 @@ public class MySqlGameDAO implements GameDAO{
                 }
             }
         } catch (Throwable e) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s\n", e.getMessage()));
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid gameID");
     }
@@ -52,11 +51,11 @@ public class MySqlGameDAO implements GameDAO{
     public void addPlayer(int gameId, String playerColor, String username) throws ResponseException, DataAccessException {
         var gameData = getGame(gameId);
         if (gameData == null) {
-            throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid gameID");
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid gameId\n");
         }
         var canAddPlayer = colorAvailable(gameId, playerColor);
         if (!canAddPlayer) {
-            throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: Color already taken");
+            throw new ResponseException(ResponseException.Code.AlreadyTakenError, "Error: Color already taken\n");
         }
 
         String command;
@@ -83,7 +82,7 @@ public class MySqlGameDAO implements GameDAO{
                 }
             }
         } catch (Throwable e) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s\n", e.getMessage()));
         }
         return result;
     }
@@ -127,7 +126,7 @@ public class MySqlGameDAO implements GameDAO{
                 }
             }
         } catch (Throwable e) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s\n", e.getMessage()));
         }
         return null;
     }
@@ -143,9 +142,9 @@ public class MySqlGameDAO implements GameDAO{
                 }
             }
         } catch (Throwable e) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read game data: %s", e.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read game data: %s\n", e.getMessage()));
         }
-        throw new ResponseException(ResponseException.Code.ServerError, "Error: Unable to count game data: %s");
+        throw new ResponseException(ResponseException.Code.ServerError, "Error: Unable to count game data: %s\n");
     }
 
 }

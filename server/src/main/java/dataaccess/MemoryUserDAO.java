@@ -30,7 +30,7 @@ public class MemoryUserDAO implements UserDAO{
     public void verifyLogin(String username, String password) throws ResponseException, DataAccessException{
         var user = users.get(username);
         if (!user.password().equals(password)) {
-            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: incorrect password");
+            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: incorrect password\n");
         }
     }
 

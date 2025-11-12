@@ -22,7 +22,7 @@ public class MySqlAuthDAO implements AuthDAO{
                 }
             }
         } catch (Throwable e) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s\n", e.getMessage()));
         }
         return null;
     }
@@ -65,9 +65,9 @@ public class MySqlAuthDAO implements AuthDAO{
                 }
             }
         } catch (Throwable e) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read auth data: %s", e.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read auth data: %s\n", e.getMessage()));
         }
-        throw new ResponseException(ResponseException.Code.ServerError, "Error: Unable to count auth data: %s");
+        throw new ResponseException(ResponseException.Code.ServerError, "Error: Unable to count auth data: %s\n");
     }
 
     private int getCount(ResultSet rs) throws SQLException{

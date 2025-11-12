@@ -28,7 +28,7 @@ public class MySqlUserDAO implements UserDAO{
                 }
             }
         } catch (Throwable e) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read data: %s\n", e.getMessage()));
         }
         return null;
     }
@@ -53,7 +53,7 @@ public class MySqlUserDAO implements UserDAO{
 
         var correctPassword = BCrypt.checkpw(password, user.password());
         if (!correctPassword) {
-            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: incorrect password");
+            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: incorrect password\n");
         }
     }
 
@@ -108,7 +108,7 @@ public class MySqlUserDAO implements UserDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to create database", ex);
+            throw new DataAccessException("failed to create database\n", ex);
         }
     }
 
@@ -125,7 +125,7 @@ public class MySqlUserDAO implements UserDAO{
         } catch (Throwable e) {
             throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to read user data: %s", e.getMessage()));
         }
-        throw new ResponseException(ResponseException.Code.ServerError, "Error: Unable to count user data: %s");
+        throw new ResponseException(ResponseException.Code.ServerError, "Error: Unable to count user data: %s\n");
     }
 
     private int getCount(ResultSet rs) throws SQLException{
