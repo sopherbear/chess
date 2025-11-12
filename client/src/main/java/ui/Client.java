@@ -8,6 +8,7 @@ import model.*;
 import static ui.EscapeSequences.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -16,7 +17,7 @@ public class Client {
     private final ServerFacade server;
     private State state = State.PRELOGIN;
     private String authToken = null;
-    private Map<Integer, GameID> currGames =  null;
+    private Map<Integer, Integer> currGames = new HashMap<>();
 
     public Client(String serverUrl) throws ResponseException {
         server = new ServerFacade(serverUrl);
@@ -69,7 +70,7 @@ public class Client {
                     case "create" -> create(params);
                     case "list" -> listGames();
                     case "join" -> joinGame(params);
-                    case "observe" -> observeGame();
+                    case "observe" -> observeGame(params);
                     case "logout" -> logout();
                     case "quit" -> "quit";
                     default -> help();
@@ -89,7 +90,7 @@ public class Client {
             state = State.POSTLOGIN;
             return String.format("Welcome back, %s!\n", params[0]);
         }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected <USERNAME> <PASSWORD>");
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected <USERNAME> <PASSWORD>\n");
     }
 
     public String register(String... params) throws ResponseException{
@@ -100,7 +101,7 @@ public class Client {
             state = State.POSTLOGIN;
             return String.format("Welcome, %s. Your account has been created. \n", params[0]);
         }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected <USERNAME> <PASSWORD> <EMAIL>");
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected <USERNAME> <PASSWORD> <EMAIL>\n");
     }
 
     public String logout() throws ResponseException{
@@ -115,18 +116,22 @@ public class Client {
             var gameName = new GameName(params[0]);
             server.createGame(authToken, gameName);
             //TODO: Store gameID somewhere
-            return String.format("Your game %s has been created!", params[0]);
+            return String.format("Your game %s has been created!\n", params[0]);
         }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENAME>");
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENAME>\n");
     }
 
     public String listGames() throws ResponseException {
         GamesList gameDatas = server.listGames(authToken);
         var games = gameDatas.getGames();
 
+        if (games.size() == 0) {
+            return String.format("No chess games have been created yet. Run 'create <GAMENAME>' to make one!\n");
+        }
+
         String gameText = "";
         int gamesCount = 0;
-        Map<Integer, GameID> updatedGames = null;
+        Map<Integer, Integer> updatedGames = new HashMap<>();
 
         for (GameData game : games) {
             gamesCount += 1;
@@ -135,7 +140,7 @@ public class Client {
             String blackPlayer = (game.blackUsername() == null) ? "AVAILABLE" : game.blackUsername();
             String gameString = String.format("%d. %s: WHITE: %s BLACK: %s\n", gamesCount, game.gameName(), whitePlayer, blackPlayer);
             gameText += gameString;
-            updatedGames.put(gamesCount, new GameID(game.gameID()));
+            updatedGames.put(gamesCount, game.gameID());
         }
 
         currGames = updatedGames;
@@ -145,19 +150,47 @@ public class Client {
     public String joinGame(String... params) throws ResponseException {
         if (params.length == 2) {
             // TODO: use game number to retrieve ID for game.
-            server.joinGame(authToken, new GameRequest(currGames.get(params[0].toInteger), params[1]));
+            int gameNum;
+            int gameId;
+            try {
+                gameNum = Integer.parseInt(params[0]);
+            } catch (NumberFormatException e) {
+                throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER> to be a number\n");
+            }
+
+            try {
+                gameId = currGames.get(gameNum);
+            } catch(NullPointerException e) {
+                throw new ResponseException(ResponseException.Code.ClientError, "That game does not exist. Run 'list' command to see available games.\n");
+            }
+
+            server.joinGame(authToken, new GameRequest(gameId, params[1].toUpperCase()));
             // TODO: print a gameboard
-            return String.format("You have successfully joined the game");
+            return String.format("You have successfully joined the game\n");
         }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER>, <COLOR> (either WHITE or BLACK)");
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER> <PLAYERCOLOR> (WHITE or BLACK)\n");
     }
 
     public String observeGame(String... params) throws ResponseException{
         if (params.length == 1) {
+            int gameNum;
+            int gameId;
+            try {
+                gameNum = Integer.parseInt(params[0]);
+            } catch (NumberFormatException e) {
+                throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER> to be a number\n");
+            }
+
+            try {
+                gameId = currGames.get(gameNum);
+            } catch(NullPointerException e) {
+                throw new ResponseException(ResponseException.Code.ClientError, "That game does not exist. Run 'list' command to see available games.\n");
+            }
+
             // TODO: retrieve correct game, display chessboard
-            return String.format("REMEMBER TO DISPLAY CHESSBOARD INSTEAD.");
+            return String.format("REMEMBER TO DISPLAY CHESSBOARD INSTEAD.\n");
         }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER>");
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER>\n");
     }
 
     public String help() {
@@ -175,7 +208,7 @@ public class Client {
                     RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "create <GAMENAME>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - create a new game and give it a name\n"
                             + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "list" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list current chess games and their numbers\n"
                             + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "join <GAMENUMBER> [WHITE|BLACK]" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - join an existing game as a particular color\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "observe<GAMENUMBER>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - watch a particular game\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "observe <GAMENUMBER>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - watch a particular game\n"
                             + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "logout" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - log out of chess\n"
                             + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess console\n"
                             + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";

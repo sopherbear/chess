@@ -64,7 +64,7 @@ public class Server {
     private void register(Context ctx) throws ResponseException, DataAccessException{
         RegisterRequest newUser = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         if (newUser.username() == null || newUser.password() == null || newUser.email() == null) {
-            throw new ResponseException(ResponseException.Code.ClientError, "Error: Registration info not complete");
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: Registration info not complete\n");
         }
         AuthData userAuth = userService.register(newUser);
 
@@ -74,7 +74,7 @@ public class Server {
     private void login(Context ctx) throws ResponseException, DataAccessException {
         LoginRequest newLogin = new Gson().fromJson(ctx.body(), LoginRequest.class);
         if (newLogin.password() == null || newLogin.username() == null) {
-            throw new ResponseException(ResponseException.Code.ClientError, "Error: login info not complete");
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: login info not complete\n");
         }
         AuthData sessionAuth = userService.login(newLogin);
 
@@ -84,7 +84,7 @@ public class Server {
     private void logout(Context ctx) throws ResponseException, DataAccessException{
         String authToken = ctx.header("authorization");
         if (authToken == null) {
-            throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included\n");
         }
         userService.logout(authToken);
         ctx.status(200);
@@ -93,11 +93,11 @@ public class Server {
     private void createGame(Context ctx) throws ResponseException, DataAccessException{
         String authToken = ctx.header("authorization");
         if (authToken == null) {
-            throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included\n");
         }
         GameName newGame = new Gson().fromJson(ctx.body(), GameName.class);
         if (newGame.gameName() == null) {
-            throw new ResponseException(ResponseException.Code.ClientError, "Error: gameName not included");
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: gameName not included\n");
         }
 
         var newGameID = gameService.createGame(authToken, newGame);
@@ -108,14 +108,14 @@ public class Server {
     private void joinGame(Context ctx) throws ResponseException, DataAccessException {
         String authToken = ctx.header("authorization");
         if (authToken == null) {
-            throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included\n");
         }
         GameRequest joinInfo = new Gson().fromJson(ctx.body(), GameRequest.class);
         if (joinInfo.playerColor() == null) {
-            throw new ResponseException(ResponseException.Code.ClientError, "Error: playerColor not included");
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: playerColor not included\n");
         }
         if (!joinInfo.playerColor().equals("BLACK") && !joinInfo.playerColor().equals("WHITE")) {
-            throw new ResponseException(ResponseException.Code.ClientError, "Error: playerColor is invalid");
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: playerColor is invalid\n");
         }
 
         gameService.joinGame(authToken, joinInfo);
@@ -125,7 +125,7 @@ public class Server {
     private void listGames(Context ctx) throws ResponseException, DataAccessException {
         String authToken = ctx.header("authorization");
         if (authToken == null) {
-            throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included");
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: authToken not included\n");
         }
 
         var gamesList = gameService.listGames(authToken);

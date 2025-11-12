@@ -18,7 +18,7 @@ public class GameService {
     public GameID createGame(String authToken, GameName gameName) throws ResponseException, DataAccessException{
         var auth = authDAO.getAuth(authToken);
         if (auth == null) {
-            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found");
+            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found\n");
         }
 
         var gameID = gameDAO.createGame(gameName.gameName());
@@ -29,7 +29,7 @@ public class GameService {
     public void joinGame(String authToken, GameRequest gameRequest) throws ResponseException, DataAccessException{
         var auth = authDAO.getAuth(authToken);
         if (auth == null) {
-            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found");
+            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found\n");
         }
 
         var gamedata = gameDAO.getGame(gameRequest.gameID());
@@ -40,7 +40,7 @@ public class GameService {
     public GamesList listGames(String authToken) throws ResponseException, DataAccessException{
         var auth = authDAO.getAuth(authToken);
         if (auth == null) {
-            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found");
+            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Authorization not found\n");
         }
 
         return new GamesList(gameDAO.listGames());
