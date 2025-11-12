@@ -42,6 +42,10 @@ public class Client {
                 System.out.print(msg);
             }
         }
+        if (state != State.PRELOGIN) {
+            try{server.logout(authToken);}
+            catch(ResponseException e){}
+        }
         System.out.println();
 
     }
@@ -136,9 +140,9 @@ public class Client {
         for (GameData game : games) {
             gamesCount += 1;
 
-            String whitePlayer = (game.whiteUsername() == null) ? "AVAILABLE" : game.whiteUsername();
-            String blackPlayer = (game.blackUsername() == null) ? "AVAILABLE" : game.blackUsername();
-            String gameString = String.format("%d. %s: WHITE: %s BLACK: %s\n", gamesCount, game.gameName(), whitePlayer, blackPlayer);
+            String whitePlayer = (game.whiteUsername() == null) ? "available" : game.whiteUsername();
+            String blackPlayer = (game.blackUsername() == null) ? "available" : game.blackUsername();
+            String gameString = String.format("GAMENUMBER: %d\t GAMENAME: %s\t WHITE: %s\t BLACK: %s\n", gamesCount, game.gameName(), whitePlayer, blackPlayer);
             gameText += gameString;
             updatedGames.put(gamesCount, game.gameID());
         }
