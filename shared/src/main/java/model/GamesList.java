@@ -19,5 +19,6 @@ public record GamesList(Collection<GameData> games) {
         return ((List<GameData>)games).getFirst();
     }
 
+    public List<GameData> getGames( ){return (List<GameData>)games;}
 
 }

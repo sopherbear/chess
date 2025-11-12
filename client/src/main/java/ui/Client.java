@@ -8,6 +8,7 @@ import model.*;
 import static ui.EscapeSequences.*;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Scanner;
 
 
@@ -15,7 +16,7 @@ public class Client {
     private final ServerFacade server;
     private State state = State.PRELOGIN;
     private String authToken = null;
-    private String game =  null;
+    private Map<Integer, GameID> currGames =  null;
 
     public Client(String serverUrl) throws ResponseException {
         server = new ServerFacade(serverUrl);
@@ -120,20 +121,35 @@ public class Client {
     }
 
     public String listGames() throws ResponseException {
-        GamesList games = server.listGames(authToken);
+        GamesList gameDatas = server.listGames(authToken);
+        var games = gameDatas.getGames();
+
         String gameText = "";
-        // TODO: convert to be readable, not just json
+        int gamesCount = 0;
+        Map<Integer, GameID> updatedGames = null;
+
+        for (GameData game : games) {
+            gamesCount += 1;
+
+            String whitePlayer = (game.whiteUsername() == null) ? "AVAILABLE" : game.whiteUsername();
+            String blackPlayer = (game.blackUsername() == null) ? "AVAILABLE" : game.blackUsername();
+            String gameString = String.format("%d. %s: WHITE: %s BLACK: %s\n", gamesCount, game.gameName(), whitePlayer, blackPlayer);
+            gameText += gameString;
+            updatedGames.put(gamesCount, new GameID(game.gameID()));
+        }
+
+        currGames = updatedGames;
         return gameText;
     }
 
     public String joinGame(String... params) throws ResponseException {
         if (params.length == 2) {
             // TODO: use game number to retrieve ID for game.
-            server.joinGame(authToken, new GameRequest(new GameID(params[0]), params[1]));
+            server.joinGame(authToken, new GameRequest(currGames.get(params[0].toInteger), params[1]));
             // TODO: print a gameboard
             return String.format("You have successfully joined the game");
         }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMEID>, <COLOR> (either WHITE or BLACK)");
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER>, <COLOR> (either WHITE or BLACK)");
     }
 
     public String observeGame(String... params) throws ResponseException{
@@ -141,7 +157,7 @@ public class Client {
             // TODO: retrieve correct game, display chessboard
             return String.format("REMEMBER TO DISPLAY CHESSBOARD INSTEAD.");
         }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMEID>");
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER>");
     }
 
     public String help() {
@@ -157,9 +173,9 @@ public class Client {
         else if (state == State.POSTLOGIN) {
             helpMenu =
                     RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "create <GAMENAME>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - create a new game and give it a name\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "list" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - get a list of current chess games\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "join <ID> [WHITE|BLACK]" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - join an existing game as a particular color\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "observe" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - watch a particular game\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "list" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list current chess games and their numbers\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "join <GAMENUMBER> [WHITE|BLACK]" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - join an existing game as a particular color\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "observe<GAMENUMBER>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - watch a particular game\n"
                             + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "logout" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - log out of chess\n"
                             + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess console\n"
                             + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";
