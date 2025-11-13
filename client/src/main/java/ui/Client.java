@@ -220,25 +220,38 @@ public class Client {
         String helpMenu;
         if (state == State.PRELOGIN) {
             helpMenu =
-                    RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "register <USERNAME> <PASSWORD> <EMAIL>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - register a new user\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "login <USERNAME> <PASSWORD>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - log in to existing account\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";
+                    RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "register <USERNAME> <PASSWORD> <EMAIL>"
+                            + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - register a new user\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "login <USERNAME> <PASSWORD>"
+                            + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - log in to existing account\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit"
+                            + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help"
+                            + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";
 
         }
         else if (state == State.POSTLOGIN) {
             helpMenu =
-                    RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "create <GAMENAME>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - create a new game and give it a name\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "list" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list current chess games and their numbers\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "join <GAMENUMBER> [WHITE|BLACK]" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - join an existing game as a particular color\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "observe <GAMENUMBER>" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - watch a particular game\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "logout" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - log out of chess\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess console\n"
-                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";
+                    RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "create <GAMENAME>"
+                            + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - create a new game and give it a name\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "list"
+                            + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list current chess games and their numbers\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "join <GAMENUMBER> [WHITE|BLACK]"
+                            + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - join an existing game as a particular color\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "observe <GAMENUMBER>"
+                            + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - watch a particular game\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "logout"
+                            + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - log out of chess\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit"
+                            + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess console\n"
+                            + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help"
+                            + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";
         }
         else {
-            helpMenu = RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess console\n"
-                    + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";}
+            helpMenu = RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit"
+                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess console\n"
+                    + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help"
+                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";}
 
         return helpMenu;
     }
