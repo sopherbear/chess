@@ -143,17 +143,18 @@ public class Client {
         }
 
         String gameText = "";
-        int gamesCount = 0;
+        int gameNum = 0;
         Map<Integer, Integer> updatedGames = new HashMap<>();
 
         for (GameData game : games) {
-            gamesCount += 1;
+            gameNum += 1;
 
-            String whitePlayer = (game.whiteUsername() == null) ? "available" : game.whiteUsername();
-            String blackPlayer = (game.blackUsername() == null) ? "available" : game.blackUsername();
-            String gameString = String.format("GAMENUMBER: %d\t GAMENAME: %s\t WHITE: %s\t BLACK: %s\n", gamesCount, game.gameName(), whitePlayer, blackPlayer);
+            String white = (game.whiteUsername() == null) ? "available" : game.whiteUsername();
+            String black = (game.blackUsername() == null) ? "available" : game.blackUsername();
+            var gameName = game.gameName();
+            String gameString = String.format("GAMENUMBER: %d\t GAMENAME: %s\t WHITE: %s\t BLACK: %s\n", gameNum, gameName, white, black);
             gameText += gameString;
-            updatedGames.put(gamesCount, game.gameID());
+            updatedGames.put(gameNum, game.gameID());
         }
 
         currGames = updatedGames;
@@ -173,7 +174,7 @@ public class Client {
             try {
                 gameId = currGames.get(gameNum);
             } catch(NullPointerException e) {
-                throw new ResponseException(ResponseException.Code.ClientError, "That game does not exist. Run 'list' command to see available games.\n");
+                throw new ResponseException(ResponseException.Code.ClientError, "Game not found. Run 'list' command to see available games.\n");
             }
 
             server.joinGame(authToken, new GameRequest(gameId, params[1].toUpperCase()));
@@ -203,7 +204,7 @@ public class Client {
             try {
                 gameId = currGames.get(gameNum);
             } catch(NullPointerException e) {
-                throw new ResponseException(ResponseException.Code.ClientError, "That game does not exist. Run 'list' command to see available games.\n");
+                throw new ResponseException(ResponseException.Code.ClientError, "Game not found. Run 'list' command to see available games.\n");
             }
 
             // TODO: IMPLEMENT ACTUAL CHESSGAME WITH PHASE 6
