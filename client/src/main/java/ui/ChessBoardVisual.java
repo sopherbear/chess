@@ -7,9 +7,9 @@ import static ui.EscapeSequences.*;
 
 public class ChessBoardVisual {
     private static final int BOARD_SIZE_IN_SQUARES = 8;
-    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 2;
+    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
 
-    private static final String EMPTY = "       ";
+    private static final String EMPTY = "         ";
 
 
     public static void main(String[] args) {
@@ -17,7 +17,6 @@ public class ChessBoardVisual {
 
         out.print(ERASE_SCREEN);
 
-        drawColumnHeaders(out);
         drawChessBoardVisual(out);
         drawColumnHeaders(out);
 
@@ -27,7 +26,7 @@ public class ChessBoardVisual {
 
     private static void drawColumnHeaders(PrintStream out) {
         setBlack(out);
-        String[] headers = {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "};
+        String[] headers = {"a", "b", "c", "d", "e", "f", "g", "h"};
 
         for (int col = 0; col < 8; ++col) {
             drawHeader(out, headers[col]);
@@ -37,8 +36,8 @@ public class ChessBoardVisual {
     }
 
     private static void drawHeader(PrintStream out, String header) {
-        int prefixLength = 3;
-        int suffixLength = 3;
+        int prefixLength = 4;
+        int suffixLength = 4;
 
         out.print(" ".repeat(prefixLength));
         printHeaderText(out, header);
@@ -58,15 +57,17 @@ public class ChessBoardVisual {
 
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
             if (boardRow%2 == 0){
-                drawBlackFirstLine(out);
+                drawBlackFirstLine(out,8 - boardRow);
             } else {
-                drawWhiteFirstLine(out);
+                drawWhiteFirstLine(out, 8 - boardRow);
             }
+
         }
 
     }
 
-    private static void drawBlackFirstLine(PrintStream out) {
+    private static void drawBlackFirstLine(PrintStream out, int num) {
+        var rowNumSet = false;
         for (int rowSquare = 0; rowSquare < SQUARE_SIZE_IN_PADDED_CHARS; ++rowSquare) {
             for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
                 if(col%2 == 0){
@@ -76,13 +77,19 @@ public class ChessBoardVisual {
                 }
                 out.print(EMPTY);
                 setBlack(out);
+            }
+            setBlack(out);
+            if (!rowNumSet) {
+                out.print(String.format(" %d", num));
+                rowNumSet = true;
             }
             out.println();
         }
 
     }
 
-    private static void drawWhiteFirstLine(PrintStream out) {
+    private static void drawWhiteFirstLine(PrintStream out, int num) {
+        var rowNumSet = false;
         for (int rowSquare = 0; rowSquare < SQUARE_SIZE_IN_PADDED_CHARS; ++rowSquare) {
             for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
                 if(col%2 == 0){
@@ -92,6 +99,11 @@ public class ChessBoardVisual {
                 }
                 out.print(EMPTY);
                 setBlack(out);
+            }
+            setBlack(out);
+            if (!rowNumSet) {
+                out.print(String.format(" %d", num));
+                rowNumSet = true;
             }
             out.println();
         }
@@ -100,7 +112,7 @@ public class ChessBoardVisual {
 
     private static void setBlack(PrintStream out) {
         out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_BLACK);
+        out.print(RESET_TEXT_COLOR);
     }
 
     private static void setPink(PrintStream out) {
@@ -112,4 +124,5 @@ public class ChessBoardVisual {
         out.print(SET_BG_COLOR_TURQUOISE);
         out.print(SET_TEXT_COLOR_TURQUOISE);
     }
+
 }
