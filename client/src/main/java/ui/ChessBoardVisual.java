@@ -91,25 +91,24 @@ public class ChessBoardVisual {
 
     }
 
+    private void handleCellPrinting(PrintStream out, int rowSquare, int row, int col) {
+        if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2){
+            out.print(RESET_TEXT_COLOR);
+            out.print(determinePiece(row, col, out));
+        } else {
+            out.print(EMPTY);
+        }
+    }
+
     private void drawWhiteFirstLine(PrintStream out, int num) {
         for (int rowSquare = 0; rowSquare < SQUARE_SIZE_IN_PADDED_CHARS; ++rowSquare) {
             for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
                 if(col%2 == 0){
                     setPink(out);
-                    if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2){
-                        out.print(RESET_TEXT_COLOR);
-                        out.print(determinePiece(num, col, out));
-                    } else {
-                        out.print(EMPTY);
-                    }
+                    handleCellPrinting(out, rowSquare, num, col);
                 } else {
                     setTurquoise(out);
-                    if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2){
-                        out.print(RESET_TEXT_COLOR);
-                        out.print(determinePiece(num, col, out));
-                    } else {
-                        out.print(EMPTY);
-                    }
+                    handleCellPrinting(out, rowSquare, num, col);
                 }
                 setBlack(out);
             }
@@ -131,20 +130,10 @@ public class ChessBoardVisual {
             for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
                 if(col%2 == 0){
                     setTurquoise(out);
-                    if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2){
-                        out.print(RESET_TEXT_COLOR);
-                        out.print(determinePiece(num, col, out));
-                    } else {
-                        out.print(EMPTY);
-                    }
+                    handleCellPrinting(out, rowSquare, num, col);
                 } else {
                     setPink(out);
-                    if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2){
-                        out.print(RESET_TEXT_COLOR);
-                        out.print(determinePiece(num, col, out));
-                    } else {
-                        out.print(EMPTY);
-                    }
+                    handleCellPrinting(out, rowSquare, num, col);
                 }
                 setBlack(out);
             }
