@@ -121,7 +121,7 @@ public class Client {
         server.logout(authToken);
         authToken = null;
         state = State.PRELOGIN;
-        return String.format("You have been logged out.");
+        return String.format("You have been logged out.\n");
     }
 
     public String create(String... params) throws ResponseException{
