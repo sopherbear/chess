@@ -71,7 +71,7 @@ public class Client {
                 };
             }
             // TODO: turn this into else if state = POSTLOGIN once gameplay is introduced
-            else
+            if (state == State.POSTLOGIN)
             {
                 return switch (cmd) {
                     case "create" -> create(params);
@@ -79,6 +79,12 @@ public class Client {
                     case "join" -> joinGame(params);
                     case "observe" -> observeGame(params);
                     case "logout" -> logout();
+                    case "quit" -> "quit";
+                    default -> help();
+                };
+            }
+            else {
+                return switch (cmd) {
                     case "quit" -> "quit";
                     default -> help();
                 };
@@ -164,7 +170,6 @@ public class Client {
             } catch (NumberFormatException e) {
                 throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER> to be a number\n");
             }
-
             try {
                 gameId = currGames.get(gameNum);
             } catch(NullPointerException e) {
@@ -178,6 +183,8 @@ public class Client {
             board.resetBoard();
             ChessBoardVisual boardVisual = new ChessBoardVisual(board, playerColor);
             boardVisual.getBoardVisual();
+
+            state = State.PLAYBALL;
             return String.format("You have successfully joined the game\n");
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER> <PLAYERCOLOR> (WHITE or BLACK)\n");
@@ -229,7 +236,9 @@ public class Client {
                             + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess console\n"
                             + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";
         }
-        else {return "GAME NOT IMPLEMENTED YET";}
+        else {
+            helpMenu = RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess console\n"
+                    + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help" + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";}
 
         return helpMenu;
     }
