@@ -173,10 +173,11 @@ public class Client {
 
             server.joinGame(authToken, new GameRequest(gameId, params[1].toUpperCase()));
             playerColor = params[1].equals("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+            // TODO: implement actual chessgame in phase 6
             ChessBoard board = new ChessBoard();
             board.resetBoard();
             ChessBoardVisual boardVisual = new ChessBoardVisual(board, playerColor);
-            boardVisual.drawBoardVisual();
+            boardVisual.getBoardVisual();
             return String.format("You have successfully joined the game\n");
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER> <PLAYERCOLOR> (WHITE or BLACK)\n");
@@ -198,8 +199,12 @@ public class Client {
                 throw new ResponseException(ResponseException.Code.ClientError, "That game does not exist. Run 'list' command to see available games.\n");
             }
 
-            // TODO: retrieve correct game, display chessboard
-            return String.format("REMEMBER TO DISPLAY CHESSBOARD INSTEAD.\n");
+            // TODO: IMPLEMENT ACTUAL CHESSGAME WITH PHASE 6
+            ChessBoard board = new ChessBoard();
+            board.resetBoard();
+            ChessBoardVisual boardVisual = new ChessBoardVisual(board, ChessGame.TeamColor.WHITE);
+            boardVisual.getBoardVisual();
+            return String.format("Successfully observing game.");
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER>\n");
     }

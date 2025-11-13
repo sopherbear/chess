@@ -31,16 +31,12 @@ public class ChessBoardVisual {
         this.player = player;
     }
 
-    public void drawBoardVisual() {
+    public void getBoardVisual() {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);
 
-        if (player == ChessGame.TeamColor.BLACK) {
-            drawBlackBoardVisual(out);
-        } else {
-            drawWhiteBoardVisual(out);
-        }
+        drawBoardVisual(out);
 
         drawColumnHeaders(out);
 
@@ -82,7 +78,7 @@ public class ChessBoardVisual {
         setBlack(out);
     }
 
-    private void drawWhiteBoardVisual(PrintStream out) {
+    private void drawBoardVisual(PrintStream out) {
 
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
             if (boardRow%2 == 0){
@@ -95,15 +91,37 @@ public class ChessBoardVisual {
 
     }
 
-    private void drawBlackBoardVisual(PrintStream out) {
-
-        for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
-            if (boardRow%2 == 0){
-                drawWhiteFirstLine(out,boardRow);
-            } else {
-                drawBlackFirstLine(out,boardRow);
+    private void drawWhiteFirstLine(PrintStream out, int num) {
+        for (int rowSquare = 0; rowSquare < SQUARE_SIZE_IN_PADDED_CHARS; ++rowSquare) {
+            for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
+                if(col%2 == 0){
+                    setPink(out);
+                    if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2){
+                        out.print(RESET_TEXT_COLOR);
+                        out.print(determinePiece(num, col, out));
+                    } else {
+                        out.print(EMPTY);
+                    }
+                } else {
+                    setTurquoise(out);
+                    if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2){
+                        out.print(RESET_TEXT_COLOR);
+                        out.print(determinePiece(num, col, out));
+                    } else {
+                        out.print(EMPTY);
+                    }
+                }
+                setBlack(out);
             }
-
+            setBlack(out);
+            if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2) {
+                if (player == ChessGame.TeamColor.BLACK) {
+                    out.print(String.format(" %d", 8 - num));
+                } else {
+                    out.print(String.format(" %d", num+1));
+                }
+            }
+            out.println();
         }
 
     }
@@ -112,37 +130,6 @@ public class ChessBoardVisual {
         for (int rowSquare = 0; rowSquare < SQUARE_SIZE_IN_PADDED_CHARS; ++rowSquare) {
             for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
                 if(col%2 == 0){
-                    setPink(out);
-                    if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2){
-                        out.print(RESET_TEXT_COLOR);
-                        out.print(determinePiece(num, col, out));
-                    } else {
-                        out.print(EMPTY);
-                    }
-                } else {
-                    setTurquoise(out);
-                    if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2){
-                        out.print(RESET_TEXT_COLOR);
-                        out.print(determinePiece(num, col, out));
-                    } else {
-                        out.print(EMPTY);
-                    }
-                }
-                setBlack(out);
-            }
-            setBlack(out);
-            if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2) {
-                out.print(String.format(" %d", num+1));
-            }
-            out.println();
-        }
-
-    }
-
-    private void drawWhiteFirstLine(PrintStream out, int num) {
-        for (int rowSquare = 0; rowSquare < SQUARE_SIZE_IN_PADDED_CHARS; ++rowSquare) {
-            for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
-                if(col%2 == 0){
                     setTurquoise(out);
                     if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2){
                         out.print(RESET_TEXT_COLOR);
@@ -163,7 +150,12 @@ public class ChessBoardVisual {
             }
             setBlack(out);
             if (rowSquare == SQUARE_SIZE_IN_PADDED_CHARS/2) {
-                out.print(String.format(" %d", num+1));
+                if (player == ChessGame.TeamColor.WHITE) {
+                    out.print(String.format(" %d", num+1));
+                } else {
+                    out.print(String.format(" %d", 8 - num));
+                }
+
             }
             out.println();
         }
@@ -177,7 +169,7 @@ public class ChessBoardVisual {
 
         }
         else {
-            piece = game.getPiece(new ChessPosition(8-row+1, 8-col+1));
+            piece = game.getPiece(new ChessPosition(8-row, 8-col));
         }
 
         if (piece == null) {
