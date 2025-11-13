@@ -1,5 +1,7 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import exception.ResponseException;
 import facade.ServerFacade;
 import clientstate.State;
@@ -18,6 +20,7 @@ public class Client {
     private State state = State.PRELOGIN;
     private String authToken = null;
     private Map<Integer, Integer> currGames = new HashMap<>();
+    private ChessGame.TeamColor playerColor = null;
 
     public Client(String serverUrl) throws ResponseException {
         server = new ServerFacade(serverUrl);
@@ -153,9 +156,9 @@ public class Client {
 
     public String joinGame(String... params) throws ResponseException {
         if (params.length == 2) {
-            // TODO: use game number to retrieve ID for game.
             int gameNum;
             int gameId;
+
             try {
                 gameNum = Integer.parseInt(params[0]);
             } catch (NumberFormatException e) {
@@ -169,7 +172,11 @@ public class Client {
             }
 
             server.joinGame(authToken, new GameRequest(gameId, params[1].toUpperCase()));
-            // TODO: print a gameboard
+            playerColor = params[1].equals("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+            ChessBoard board = new ChessBoard();
+            board.resetBoard();
+            ChessBoardVisual boardVisual = new ChessBoardVisual(board, playerColor);
+            boardVisual.drawBoardVisual();
             return String.format("You have successfully joined the game\n");
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER> <PLAYERCOLOR> (WHITE or BLACK)\n");
