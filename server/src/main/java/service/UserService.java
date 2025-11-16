@@ -49,7 +49,7 @@ public class UserService {
         var userData = userDAO.getUser(username);
 
         if (userData == null) {
-            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: username does not exist\n");
+            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: Incorrect login info\n");
         }
 
         userDAO.verifyLogin(username, loginRequest.password());

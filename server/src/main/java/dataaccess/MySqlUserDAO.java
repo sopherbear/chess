@@ -53,7 +53,7 @@ public class MySqlUserDAO implements UserDAO{
 
         var correctPassword = BCrypt.checkpw(password, user.password());
         if (!correctPassword) {
-            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: incorrect password\n");
+            throw new ResponseException(ResponseException.Code.UnauthorizedError, "Error: incorrect login info\n");
         }
     }
 
