@@ -32,6 +32,13 @@ public class GameServiceTest {
         var id = SERVICE.createGame("starshine", name);
 
         assertTrue(id.gameID() > 0);
+    }
+
+    @Test
+    void createGameNegative() throws ResponseException, DataAccessException {
+        authDAO.createAuth(new AuthData("starshine", "Geodude"));
+        var name = new GameName( "UberSuperFunGame");
+        var id = SERVICE.createGame("starshine", name);
 
         var name2 = new GameName(null);
         assertThrows(ResponseException.class, () ->
@@ -39,7 +46,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void listGames() throws ResponseException, DataAccessException {
+    void listGamesPositive() throws ResponseException, DataAccessException {
         gameDAO.createGame("Peppermint Patty");
         gameDAO.createGame("Charlie Brown");
         gameDAO.createGame("Snoop Dogg");
@@ -52,12 +59,32 @@ public class GameServiceTest {
     }
 
     @Test
-    void joinGame() throws ResponseException, DataAccessException {
+    void listGamesNegative() throws ResponseException, DataAccessException {
+        gameDAO.createGame("Peppermint Patty");
+        gameDAO.createGame("Charlie Brown");
+        gameDAO.createGame("Snoop Dogg");
+        authDAO.createAuth(new AuthData("starshine", "Geodude"));
+        SERVICE.listGames("starshine");
+
+        assertThrows(ResponseException.class, () ->
+                SERVICE.listGames("superfast jellyfish"));
+    }
+
+    @Test
+    void joinGamePositive() throws ResponseException, DataAccessException {
         authDAO.createAuth(new AuthData("starshine", "Geodude"));
         gameDAO.createGame("Jeffrey");
         SERVICE.joinGame("starshine", new GameRequest(1, "WHITE"));
 
         assertTrue(gameDAO.getGame(1).whiteUsername() == "Geodude");
+    }
+
+    @Test
+    void joinGameNegative() throws ResponseException, DataAccessException {
+        authDAO.createAuth(new AuthData("starshine", "Geodude"));
+        gameDAO.createGame("Jeffrey");
+        SERVICE.joinGame("starshine", new GameRequest(1, "WHITE"));
+
         assertThrows(ResponseException.class, () ->
                 SERVICE.listGames("superfast jellyfish"));
 

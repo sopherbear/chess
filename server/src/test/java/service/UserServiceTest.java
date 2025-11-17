@@ -38,11 +38,17 @@ public class UserServiceTest {
 
 
     @Test
-    void register() throws ResponseException, DataAccessException {
+    void registerPositive() throws ResponseException, DataAccessException {
         var registerRequest = new RegisterRequest("Sophie", "badPassword", "nonemail@email.com");
         var auth = SERVICE.register(registerRequest);
 
         assertTrue(auth.username().equals("Sophie"));
+    }
+
+    @Test
+    void registerNegative() throws ResponseException, DataAccessException {
+        var registerRequest = new RegisterRequest("Sophie", "badPassword", "nonemail@email.com");
+       SERVICE.register(registerRequest);
 
         var registerRequest2 = new RegisterRequest("Sophie", "anotherPassword", "nonemail@email.com");
         assertThrows(ResponseException.class, () ->
@@ -50,27 +56,41 @@ public class UserServiceTest {
     }
 
 
-    @Test
-    void login() throws ResponseException, DataAccessException {
-        var loginRequest = new LoginRequest("Sophie", "badPassword");
 
-        assertThrows(ResponseException.class, () ->
-                        SERVICE.login(loginRequest));
+    @Test
+    void loginPositive() throws ResponseException, DataAccessException {
+        var loginRequest = new LoginRequest("Sophie", "badPassword");
 
         userDAO.createUser(new UserData("Sophie", "badPassword", "email"));
         var auth = SERVICE.login(loginRequest);
         assertTrue(auth.username().equals("Sophie"));
     }
 
+    @Test
+    void loginNegative() throws ResponseException, DataAccessException {
+        var loginRequest = new LoginRequest("Sophie", "badPassword");
+
+        assertThrows(ResponseException.class, () ->
+                SERVICE.login(loginRequest));
+    }
+
 
     @Test
-    void logout() throws ResponseException, DataAccessException {
+    void logoutPositive() throws ResponseException, DataAccessException {
         authDAO.createAuth(new AuthData("jellybean", "Djo"));
         authDAO.createAuth(new AuthData("spinach", "popeye"));
 
         SERVICE.logout("jellybean");
         assertTrue(authDAO.getTableCount() == 1);
 
+    }
+
+    @Test
+    void logoutNegative() throws ResponseException, DataAccessException {
+        authDAO.createAuth(new AuthData("jellybean", "Djo"));
+        authDAO.createAuth(new AuthData("spinach", "popeye"));
+
+        SERVICE.logout("jellybean");
         assertThrows(ResponseException.class, () ->
                 SERVICE.logout("jellybean"));
 
