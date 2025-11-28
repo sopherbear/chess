@@ -6,17 +6,17 @@ import exception.ResponseException;
 import facade.ServerFacade;
 import clientstate.State;
 import model.*;
-
 import static ui.EscapeSequences.*;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import websocket.WebsocketCommunicator;
 
 
 public class Client {
     private final ServerFacade server;
+    private final WebsocketCommunicator websocketCommunicator = null;
     private State state = State.PRELOGIN;
     private String authToken = null;
     private Map<Integer, Integer> currGames = new HashMap<>();

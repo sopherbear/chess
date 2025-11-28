@@ -2,16 +2,25 @@ package facade;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
+import jakarta.websocket.Endpoint;
 import model.*;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import com.sun.nio.sctp.NotificationHandler;
+import exception.ResponseException;
+import jakarta.websocket.*;
+import websocket.ServerMessageObserver;
+import websocket.messages.ServerMessage;
+import java.net.URI;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl;
+//    Session session;
+//    ServerMessageObserver messageObserver;
 
     public ServerFacade(String url) {
         this.serverUrl = url;
