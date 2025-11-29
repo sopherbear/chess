@@ -14,8 +14,6 @@ public class WebsocketCommunicator extends Endpoint {
     Session session;
     ServerMessageObserver serverMessageObserver;
 
-
-
     public WebsocketCommunicator(String url, ServerMessageObserver observer) throws ResponseException {
         try{
             url = url.replace("http", "ws");

@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import service.*;
 import model.*;
+import websocket.WebSocketHandler;
 
 
 public class Server {
@@ -17,6 +18,7 @@ public class Server {
     private UserDAO userDAO;
     private AuthDAO authDAO;
     private GameDAO gameDAO;
+    private WebSocketHandler webSocketHandler;
 
 
 //    private final
@@ -28,6 +30,7 @@ public class Server {
         this.gameDAO = new MySqlGameDAO();
         this.userService = new UserService(authDAO, userDAO, gameDAO);
         this.gameService = new GameService(authDAO, gameDAO);
+        this.webSocketHandler = new WebSocketHandler();
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .delete("/db", this::clear)
@@ -39,6 +42,11 @@ public class Server {
                 .put("/game", this::joinGame)
                 .exception(ResponseException.class, this::exceptionHandler)
                 .exception(DataAccessException.class, this::dataAccessHandler)
+                .ws("/ws", ws-> {
+                    ws.onConnect(webSocketHandler);
+                    ws.onMessage(webSocketHandler);
+                    ws.onClose(webSocketHandler);
+                })
         ;
 
         } catch (Throwable ex){

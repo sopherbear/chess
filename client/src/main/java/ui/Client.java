@@ -11,10 +11,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import websocket.ServerMessageObserver;
 import websocket.WebsocketCommunicator;
+import websocket.messages.ServerMessage;
 
 
-public class Client {
+public class Client implements ServerMessageObserver {
     private final ServerFacade server;
     private final WebsocketCommunicator websocketCommunicator = null;
     private State state = State.PRELOGIN;
@@ -255,5 +258,13 @@ public class Client {
                     + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";}
 
         return helpMenu;
+    }
+
+    public void notify(ServerMessage message){
+        var type = message.getServerMessageType();
+        //TODO: handle the different types of server messages and make sure it is actually printing out the message
+//        if (type == )
+        System.out.println(SET_TEXT_COLOR_LIGHT_PINK + message);
+
     }
 }
