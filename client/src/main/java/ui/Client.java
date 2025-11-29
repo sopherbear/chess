@@ -19,7 +19,7 @@ import websocket.messages.ServerMessage;
 
 public class Client implements ServerMessageObserver {
     private final ServerFacade server;
-    private final WebsocketCommunicator websocketCommunicator = null;
+    private final WebsocketCommunicator websocketCommunicator;
     private State state = State.PRELOGIN;
     private String authToken = null;
     private Map<Integer, Integer> currGames = new HashMap<>();
@@ -27,6 +27,7 @@ public class Client implements ServerMessageObserver {
 
     public Client(String serverUrl) throws ResponseException {
         server = new ServerFacade(serverUrl);
+        websocketCommunicator = new WebsocketCommunicator(serverUrl, this);
     }
 
     public void run() {
@@ -260,11 +261,18 @@ public class Client implements ServerMessageObserver {
         return helpMenu;
     }
 
+    @Override
     public void notify(ServerMessage message){
-        var type = message.getServerMessageType();
-        //TODO: handle the different types of server messages and make sure it is actually printing out the message
-//        if (type == )
-        System.out.println(SET_TEXT_COLOR_LIGHT_PINK + message);
-
+        switch (message.getServerMessageType()) {
+            case NOTIFICATION -> displayNotification();
+            case ERROR -> displayError();
+            case LOAD_GAME -> loadGame();
+        }
     }
+
+    public void displayNotification(){}
+
+    public void displayError(){}
+
+    public void loadGame(){};
 }
