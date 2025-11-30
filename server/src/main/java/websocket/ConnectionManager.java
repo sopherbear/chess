@@ -1,5 +1,6 @@
 package websocket;
 
+import com.google.gson.Gson;
 import model.GameID;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
@@ -29,13 +30,16 @@ public class ConnectionManager {
     }
 
     public void broadcast(Session excludeSession, Integer gameId, ServerMessage serverMessage) throws IOException {
-        String msg = serverMessage.toString();
+        String msg = new Gson().toJson(serverMessage);
         var sessions = connections.get(gameId);
         for (Session c : sessions) {
             if (c.isOpen()) {
                 if (!c.equals(excludeSession)) {
                     c.getRemote().sendString(msg);
                 }
+            } else {
+                System.out.println("Session not open");
+
             }
         }
     }

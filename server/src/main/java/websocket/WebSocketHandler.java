@@ -11,7 +11,7 @@ import model.GameData;
 import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 
 import java.io.IOException;
@@ -41,9 +41,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             String color = null;
 
             GameData game = gameDAO.getGame(gameId);
-            if (game.blackUsername().equals(username)){
+            var blackUser = game.blackUsername();
+            var whiteUser = game.whiteUsername();
+            if (blackUser != null && blackUser.equals(username)){
                 color ="black";
-            } else if (game.whiteUsername().equals(username)){
+            } else if (whiteUser != null && whiteUser.equals(username)){
                 color = "white";
             }
             connections.add(gameId, session);
@@ -69,9 +71,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 
-    private void connect(Integer gameId, Session session, String username, String color){
+    private void connect(Integer gameId, Session session, String username, String color) throws IOException{
         connections.add(gameId, session);
-        var message = new ServerMessage()
+        String message;
+        if (color == null) {
+            message = String.format("%s joined the game as an observer", username);
+        } else {
+            message = String.format("%s joined the game as %s", username, color);
+        }
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(null, gameId, notification);
     }
 
     private void makeMove(){}

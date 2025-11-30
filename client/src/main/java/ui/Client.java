@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 import websocket.ServerMessageObserver;
 import websocket.WebsocketCommunicator;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 
 public class Client implements ServerMessageObserver {
@@ -183,6 +183,7 @@ public class Client implements ServerMessageObserver {
 
             server.joinGame(authToken, new GameRequest(gameId, params[1].toUpperCase()));
             playerColor = params[1].equals("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+            websocketCommunicator.connect(authToken, gameId);
             // TODO: implement actual chessgame in phase 6
             ChessBoard board = new ChessBoard();
             board.resetBoard();
@@ -264,13 +265,16 @@ public class Client implements ServerMessageObserver {
     @Override
     public void notify(ServerMessage message){
         switch (message.getServerMessageType()) {
-            case NOTIFICATION -> displayNotification();
+            case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
             case ERROR -> displayError();
             case LOAD_GAME -> loadGame();
         }
     }
 
-    public void displayNotification(){}
+    public void displayNotification(String message){
+        System.out.println(SET_TEXT_COLOR_LIGHT_PINK + message);
+        printPrompt();
+    }
 
     public void displayError(){}
 
