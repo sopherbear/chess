@@ -5,6 +5,9 @@ import com.sun.nio.sctp.NotificationHandler;
 import exception.ResponseException;
 import jakarta.websocket.*;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -29,7 +32,13 @@ public class WebsocketCommunicator extends Endpoint {
                 @Override
                 public void onMessage(String message){
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-                    serverMessageObserver.notify(serverMessage);
+                    ServerMessage msg = switch (serverMessage.getServerMessageType()) {
+                        case NOTIFICATION -> new Gson().fromJson(message, NotificationMessage.class);
+                        case ERROR -> new Gson().fromJson(message, ErrorMessage.class);
+                        case LOAD_GAME -> new Gson().fromJson(message, LoadGameMessage.class);
+                    };
+                    //TODO: figure out the kind of server message and handle them
+                    serverMessageObserver.notify(msg);
                 }
             });
 

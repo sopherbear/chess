@@ -63,6 +63,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
         catch (IOException ex) {
             ex.printStackTrace();
+
         }
     }
 
@@ -72,7 +73,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void connect(Integer gameId, Session session, String username, String color) throws IOException{
-        connections.add(gameId, session);
         String message;
         if (color == null) {
             message = String.format("%s joined the game as an observer", username);
