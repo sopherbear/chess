@@ -30,17 +30,18 @@ public class ConnectionManager {
     }
 
     public void broadcast(Session excludeSession, Integer gameId, ServerMessage serverMessage) throws IOException {
-        String msg = new Gson().toJson(serverMessage);
         var sessions = connections.get(gameId);
         for (Session c : sessions) {
-            if (c.isOpen()) {
-                if (!c.equals(excludeSession)) {
-                    c.getRemote().sendString(msg);
-                }
-            } else {
-                System.out.println("Session not open");
-
+            if (!c.equals(excludeSession)) {
+                notifySession(c, serverMessage);
             }
+        }
+    }
+
+    public void notifySession(Session session, ServerMessage serverMessage) throws IOException{
+        if (session.isOpen()) {
+            String msg = new Gson().toJson(serverMessage);
+            session.getRemote().sendString(msg);
         }
     }
 

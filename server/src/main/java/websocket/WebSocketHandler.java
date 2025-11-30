@@ -73,6 +73,17 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void connect(Integer gameId, Session session, String username, String color) throws IOException{
+        try{
+            GameData gameData = gameDAO.getGame(gameId);
+            ChessGame game = gameData.game();
+            var loadGameMsg = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+            connections.notifySession(session, loadGameMsg);
+        } catch (ResponseException ex) {
+
+        }catch(DataAccessException ex){
+
+        }
+
         String message;
         if (color == null) {
             message = String.format("%s joined the game as an observer", username);
@@ -80,7 +91,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             message = String.format("%s joined the game as %s", username, color);
         }
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(null, gameId, notification);
+        connections.broadcast(session, gameId, notification);
     }
 
     private void makeMove(){}

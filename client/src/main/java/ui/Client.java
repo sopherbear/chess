@@ -183,12 +183,13 @@ public class Client implements ServerMessageObserver {
 
             server.joinGame(authToken, new GameRequest(gameId, params[1].toUpperCase()));
             playerColor = params[1].equals("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+
             websocketCommunicator.connect(authToken, gameId);
-            // TODO: implement actual chessgame in phase 6
-            ChessBoard board = new ChessBoard();
-            board.resetBoard();
-            ChessBoardVisual boardVisual = new ChessBoardVisual(board, playerColor);
-            boardVisual.getBoardVisual();
+//            // TODO: implement actual chessgame in phase 6
+//            ChessBoard board = new ChessBoard();
+//            board.resetBoard();
+//            ChessBoardVisual boardVisual = new ChessBoardVisual(board, playerColor);
+//            boardVisual.getBoardVisual();
 
             state = State.PLAYBALL;
             return String.format("You have successfully joined the game\n");
@@ -213,10 +214,11 @@ public class Client implements ServerMessageObserver {
             }
 
             // TODO: IMPLEMENT ACTUAL CHESSGAME WITH PHASE 6
-            ChessBoard board = new ChessBoard();
-            board.resetBoard();
-            ChessBoardVisual boardVisual = new ChessBoardVisual(board, ChessGame.TeamColor.WHITE);
-            boardVisual.getBoardVisual();
+            websocketCommunicator.connect(authToken, gameId);
+//            ChessBoard board = new ChessBoard();
+//            board.resetBoard();
+//            ChessBoardVisual boardVisual = new ChessBoardVisual(board, ChessGame.TeamColor.WHITE);
+//            boardVisual.getBoardVisual();
             return String.format("Successfully observing game.");
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER>\n");
@@ -267,7 +269,7 @@ public class Client implements ServerMessageObserver {
         switch (message.getServerMessageType()) {
             case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
             case ERROR -> displayError();
-            case LOAD_GAME -> loadGame();
+            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
         }
     }
 
@@ -278,5 +280,18 @@ public class Client implements ServerMessageObserver {
 
     public void displayError(){}
 
-    public void loadGame(){};
+    public void loadGame(ChessGame game){
+        drawBoard(game.getBoard());
+    }
+
+    public void drawBoard(ChessBoard board) {
+        System.out.println("\n");
+        ChessBoardVisual boardVisual;
+        if (playerColor == ChessGame.TeamColor.BLACK) {
+            boardVisual = new ChessBoardVisual(board, playerColor);
+        } else {
+            boardVisual = new ChessBoardVisual(board, ChessGame.TeamColor.WHITE);
+        }
+        boardVisual.getBoardVisual();
+    }
 }
