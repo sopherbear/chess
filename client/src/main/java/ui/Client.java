@@ -1,11 +1,12 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
+import chess.*;
 import exception.ResponseException;
 import facade.ServerFacade;
 import clientstate.State;
 import model.*;
+
+import static java.lang.Character.isLetter;
 import static ui.EscapeSequences.*;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -214,7 +215,7 @@ public class Client implements ServerMessageObserver {
             } catch(NullPointerException e) {
                 throw new ResponseException(ResponseException.Code.ClientError, "Game not found. Run 'list' command to see available games.\n");
             }
-
+            state = State.PLAYBALL;
             websocketCommunicator.connect(authToken, gameId);
             return String.format("Successfully observing game.");
         }
@@ -230,8 +231,21 @@ public class Client implements ServerMessageObserver {
         return String.format("Left game successfully\n");
     }
 
-    public String makeMove(String... params) {
-        return String.format("Move made successfully\n");
+    public String makeMove(String... params) throws ResponseException{
+        if (params.length  == 3 && params[0].length() == 2 && params[1].length() == 2) {
+            String start = params[0].toLowerCase();
+            String end = params[1].toLowerCase();
+            String promoPiece = params[2].toUpperCase();
+
+            var startPosition = convertToChessPosition(start);
+            var endPosition = convertToChessPosition(end);
+
+            ChessPiece.PieceType promoType = verifyPieceType(promoPiece);
+            var chessMove = new ChessMove(startPosition, endPosition, promoType);
+            websocketCommunicator.makeMove(authToken, myGameId, chessMove);
+            return String.format("Move made successfully\n");
+        }
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected <Start Position> <End Position>\n");
     }
 
     public String resignGame(){
@@ -241,6 +255,8 @@ public class Client implements ServerMessageObserver {
     public String highlightValidMoves(String... params) {
         return String.format("Valid moves highlighted in purple.\n");
     }
+
+    //TODO: Make sure to clear gameID and playerColor after game is over.
 
     public String help() {
         String helpMenu;
@@ -278,8 +294,9 @@ public class Client implements ServerMessageObserver {
                     + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - redraws the chessboard\n"
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "leave"
                     + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - leave the game without finishing\n"
-                    + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "move <Start Position> <End Position>"
-                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - make a chess move (e.g. b3 c4)\n"
+                    + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "move <Start Position> <End Position> <Promotion Piece>"
+                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC
+                    + " - make a chess move (e.g. b3 c4).\n - If promoting a pawn, put a promotion piece. If not, type none\n"
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "resign"
                     + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - forfeit the game\n"
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "highlight <piece coordinates>"
@@ -324,5 +341,28 @@ public class Client implements ServerMessageObserver {
             boardVisual = new ChessBoardVisual(board, ChessGame.TeamColor.WHITE);
         }
         boardVisual.getBoardVisual();
+    }
+
+    private ChessPosition convertToChessPosition(String positionCoords) throws ResponseException{
+        var xCoord = positionCoords.charAt(0);
+        var yCoord = positionCoords.charAt(1);
+
+        var possibleX = "abcdefgh";
+        int xRow = possibleX.indexOf(xCoord);
+        if (Character.isLetter(xCoord) && xRow != -1
+                && Character.isDigit(yCoord) && yCoord >= 1 && yCoord <= 8){
+
+            return new ChessPosition(xRow+1, yCoord);
+        }
+        throw new ResponseException(ResponseException.Code.ClientError, "Chess positions must be entered in this format: b3\n");
+    }
+
+    private ChessPiece.PieceType verifyPieceType(String piece) {
+        try{
+            ChessPiece.PieceType type = ChessPiece.PieceType.valueOf(piece);
+            return type;
+        }catch(IllegalArgumentException e){
+            return null;
+        }
     }
 }

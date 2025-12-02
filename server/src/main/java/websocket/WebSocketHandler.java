@@ -1,6 +1,7 @@
 package websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.MySqlAuthDAO;
@@ -11,6 +12,7 @@ import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 
@@ -58,7 +60,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
             switch (userCommand.getCommandType()) {
                 case CONNECT -> connect(gameId, session, username, color);
-                case MAKE_MOVE -> makeMove();
+                case MAKE_MOVE -> makeMove(((MakeMoveCommand) userCommand).getMove());
                 case LEAVE -> leave();
                 case RESIGN -> resign();
                 case GET_BOARD -> getBoard(gameId, session);
@@ -105,7 +107,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void makeMove(){}
+    private void makeMove(ChessMove move){
+
+    }
 
     private void leave(){}
 
