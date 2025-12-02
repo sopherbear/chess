@@ -245,7 +245,7 @@ public class Client implements ServerMessageObserver {
             websocketCommunicator.makeMove(authToken, myGameId, chessMove);
             return String.format("Move made successfully\n");
         }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected <Start Position> <End Position>\n");
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected <Start Position> <End Position> <Promotion Piece>\n");
     }
 
     public String resignGame(){
