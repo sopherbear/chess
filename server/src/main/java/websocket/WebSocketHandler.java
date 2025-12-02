@@ -61,6 +61,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case MAKE_MOVE -> makeMove();
                 case LEAVE -> leave();
                 case RESIGN -> resign();
+                case GET_BOARD -> getBoard(gameId, session);
             }
         } catch(ResponseException ex){
             sendResponseErrorMessage(ex, session);
@@ -79,16 +80,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void connect(Integer gameId, Session session, String username, String color) throws IOException{
-        try{
-            GameData gameData = gameDAO.getGame(gameId);
-            ChessGame game = gameData.game();
-            var loadGameMsg = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
-            connections.notifySession(session, loadGameMsg);
-        } catch (ResponseException e) {
-            sendResponseErrorMessage(e, session);
-        }catch(DataAccessException ex){
-            sendDataAccessErrorMessage(ex, session);
-        }
+        getBoard(gameId, session);
 
         String message;
         if (color == null) {
@@ -100,11 +92,24 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.broadcast(session, gameId, notification);
     }
 
+    private void getBoard(Integer gameId, Session session) throws IOException{
+        try{
+            GameData gameData = gameDAO.getGame(gameId);
+            ChessGame game = gameData.game();
+            var loadGameMsg = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+            connections.notifySession(session, loadGameMsg);
+        } catch (ResponseException e) {
+            sendResponseErrorMessage(e, session);
+        }catch(DataAccessException ex){
+            sendDataAccessErrorMessage(ex, session);
+        }
+    }
+
     private void makeMove(){}
 
-    private void leave(){};
+    private void leave(){}
 
-    private void resign(){};
+    private void resign(){}
 
     private void sendResponseErrorMessage(ResponseException ex, Session session){
         try {

@@ -54,8 +54,17 @@ public class WebsocketCommunicator extends Endpoint {
     // TODO: add websocket commands connect, make_move, leave, resign
 
     public void connect(String authToken, Integer gameId) throws ResponseException{
+        sendCommand(authToken, gameId, UserGameCommand.CommandType.CONNECT);
+    }
+
+    public void getBoard(String authToken, Integer gameId) throws ResponseException{
+        sendCommand(authToken, gameId, UserGameCommand.CommandType.GET_BOARD);
+    }
+
+
+    private void sendCommand(String authToken, Integer gameId, UserGameCommand.CommandType type) throws ResponseException{
         try {
-            var userCommand = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId);
+            var userCommand = new UserGameCommand(type, authToken, gameId);
             this.session.getBasicRemote().sendText(new Gson().toJson(userCommand));
         } catch(IOException ex){
             throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());

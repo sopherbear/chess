@@ -24,6 +24,7 @@ public class Client implements ServerMessageObserver {
     private String authToken = null;
     private Map<Integer, Integer> currGames = new HashMap<>();
     private ChessGame.TeamColor playerColor = null;
+    private Integer myGameId = null;
 
     public Client(String serverUrl) throws ResponseException {
         server = new ServerFacade(serverUrl);
@@ -89,7 +90,11 @@ public class Client implements ServerMessageObserver {
             }
             else {
                 return switch (cmd) {
-                    case "quit" -> "quit";
+                    case "redraw" -> redrawBoard();
+                    case "leave" -> leaveGame();
+                    case "move" -> makeMove(params);
+                    case "resign" -> resignGame();
+                    case "highlight" -> highlightValidMoves(params);
                     default -> help();
                 };
             }
@@ -177,6 +182,7 @@ public class Client implements ServerMessageObserver {
             }
             try {
                 gameId = currGames.get(gameNum);
+                myGameId =  gameId;
             } catch(NullPointerException e) {
                 throw new ResponseException(ResponseException.Code.ClientError, "Game not found. Run 'list' command to see available games.\n");
             }
@@ -185,11 +191,6 @@ public class Client implements ServerMessageObserver {
             playerColor = params[1].equals("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
 
             websocketCommunicator.connect(authToken, gameId);
-//            // TODO: implement actual chessgame in phase 6
-//            ChessBoard board = new ChessBoard();
-//            board.resetBoard();
-//            ChessBoardVisual boardVisual = new ChessBoardVisual(board, playerColor);
-//            boardVisual.getBoardVisual();
 
             state = State.PLAYBALL;
             return String.format("You have successfully joined the game\n");
@@ -209,19 +210,36 @@ public class Client implements ServerMessageObserver {
 
             try {
                 gameId = currGames.get(gameNum);
+                myGameId =  gameId;
             } catch(NullPointerException e) {
                 throw new ResponseException(ResponseException.Code.ClientError, "Game not found. Run 'list' command to see available games.\n");
             }
 
-            // TODO: IMPLEMENT ACTUAL CHESSGAME WITH PHASE 6
             websocketCommunicator.connect(authToken, gameId);
-//            ChessBoard board = new ChessBoard();
-//            board.resetBoard();
-//            ChessBoardVisual boardVisual = new ChessBoardVisual(board, ChessGame.TeamColor.WHITE);
-//            boardVisual.getBoardVisual();
             return String.format("Successfully observing game.");
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER>\n");
+    }
+
+    public String redrawBoard() throws ResponseException{
+        websocketCommunicator.getBoard(authToken, myGameId);
+        return String.format("Redrawing board...\n");
+    }
+
+    public String leaveGame(){
+        return String.format("Left game successfully\n");
+    }
+
+    public String makeMove(String... params) {
+        return String.format("Move made successfully\n");
+    }
+
+    public String resignGame(){
+        return String.format("You resigned. Better luck next time!\n");
+    }
+
+    public String highlightValidMoves(String... params) {
+        return String.format("Valid moves highlighted in purple.\n");
     }
 
     public String help() {
@@ -256,10 +274,19 @@ public class Client implements ServerMessageObserver {
                             + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";
         }
         else {
-            helpMenu = RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "quit"
-                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - exit chess console\n"
+            helpMenu = RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "redraw"
+                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - redraws the chessboard\n"
+                    + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "leave"
+                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - leave the game without finishing\n"
+                    + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "move <Start Position> <End Position>"
+                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - make a chess move (e.g. b3 c4)\n"
+                    + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "resign"
+                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - forfeit the game\n"
+                    + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "highlight <piece coordinates>"
+                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - enter piece coordinates (e.g. b3) to see all valid moves\n"
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help"
-                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";}
+                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";
+        }
 
         return helpMenu;
     }
@@ -285,6 +312,7 @@ public class Client implements ServerMessageObserver {
 
     public void loadGame(ChessGame game){
         drawBoard(game.getBoard());
+        printPrompt();
     }
 
     public void drawBoard(ChessBoard board) {
