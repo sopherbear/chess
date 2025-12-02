@@ -7,6 +7,7 @@ import dataaccess.MySqlAuthDAO;
 import dataaccess.MySqlGameDAO;
 import exception.ResponseException;
 import io.javalin.websocket.*;
+import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
@@ -37,6 +38,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand userCommand = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             gameId = userCommand.getGameID();
+
+            AuthData authData = authDAO.getAuth(userCommand.getAuthToken());
+            if (authData == null){
+                throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid login");
+            }
             String username = authDAO.getAuth(userCommand.getAuthToken()).username();
             String color = null;
 
@@ -57,9 +63,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case RESIGN -> resign();
             }
         } catch(ResponseException ex){
-
+            sendResponseErrorMessage(ex, session);
         } catch(DataAccessException ex) {
-
+            sendDataAccessErrorMessage(ex, session);
         }
         catch (IOException ex) {
             ex.printStackTrace();
@@ -78,10 +84,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ChessGame game = gameData.game();
             var loadGameMsg = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
             connections.notifySession(session, loadGameMsg);
-        } catch (ResponseException ex) {
-
+        } catch (ResponseException e) {
+            sendResponseErrorMessage(e, session);
         }catch(DataAccessException ex){
-
+            sendDataAccessErrorMessage(ex, session);
         }
 
         String message;
@@ -99,5 +105,25 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void leave(){};
 
     private void resign(){};
+
+    private void sendResponseErrorMessage(ResponseException ex, Session session){
+        try {
+            var errorMsg = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
+            connections.notifySession(session, errorMsg);
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void sendDataAccessErrorMessage(DataAccessException e, Session session){
+        try {
+            var errorMsg = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, e.getMessage());
+            connections.notifySession(session, errorMsg);
+        }
+        catch(IOException ex){
+            ex.printStackTrace();
+        }
+    }
 
 }

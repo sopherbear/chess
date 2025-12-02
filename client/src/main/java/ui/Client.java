@@ -268,7 +268,7 @@ public class Client implements ServerMessageObserver {
     public void notify(ServerMessage message){
         switch (message.getServerMessageType()) {
             case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
-            case ERROR -> displayError();
+            case ERROR -> displayError(((ErrorMessage) message).getErrorMessage());
             case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
         }
     }
@@ -278,7 +278,10 @@ public class Client implements ServerMessageObserver {
         printPrompt();
     }
 
-    public void displayError(){}
+    public void displayError(String errorMessage){
+        System.out.println(SET_TEXT_COLOR_LIGHT_PINK + errorMessage);
+        printPrompt();
+    }
 
     public void loadGame(ChessGame game){
         drawBoard(game.getBoard());
