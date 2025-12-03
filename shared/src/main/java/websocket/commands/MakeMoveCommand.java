@@ -5,14 +5,14 @@ import chess.ChessMove;
 
 public class MakeMoveCommand extends UserGameCommand{
 
-    ChessMove chessMove;
+    ChessMove move;
 
-    public MakeMoveCommand(CommandType commandType, String authToken, Integer gameID, ChessMove move) {
+    public MakeMoveCommand(CommandType commandType, String authToken, Integer gameID, ChessMove chessMove) {
         super(commandType, authToken, gameID);
-        this.chessMove = move;
+        this.move = chessMove;
 
 
     }
 
-    public ChessMove getMove(){return chessMove;}
+    public ChessMove getMove(){return move;}
 }

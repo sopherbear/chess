@@ -194,7 +194,7 @@ public class Client implements ServerMessageObserver {
             websocketCommunicator.connect(authToken, gameId);
 
             state = State.PLAYBALL;
-            return String.format("You have successfully joined the game\n");
+            return String.format("Joining game\n");
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER> <PLAYERCOLOR> (WHITE or BLACK)\n");
     }
@@ -349,10 +349,14 @@ public class Client implements ServerMessageObserver {
 
         var possibleX = "abcdefgh";
         int xRow = possibleX.indexOf(xCoord);
-        if (Character.isLetter(xCoord) && xRow != -1
-                && Character.isDigit(yCoord) && yCoord >= 1 && yCoord <= 8){
 
-            return new ChessPosition(xRow+1, yCoord);
+        if (!Character.isDigit(yCoord)) {
+            throw new ResponseException(ResponseException.Code.ClientError, "Chess positions must be entered in this format: b3\n");
+        }
+        int yRow = Character.getNumericValue(yCoord);
+        if (Character.isLetter(xCoord) && xRow != -1 && yRow >= 1 && yRow <= 8){
+
+            return new ChessPosition(xRow+1, yRow);
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Chess positions must be entered in this format: b3\n");
     }

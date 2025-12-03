@@ -70,6 +70,18 @@ public class MySqlGameDAO implements GameDAO{
 
     }
 
+    public void updateGame(int gameId, ChessGame game) throws ResponseException, DataAccessException{
+        var gameData = getGame(gameId);
+        if (gameData == null) {
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid gameId\n");
+        }
+        String jsonChess = new Gson().toJson(game);
+        String command = "UPDATE game_data SET game=? WHERE gameID=?";
+
+        var updateExecutor = new ExecuteDatabaseUpdates();
+        updateExecutor.executeUpdate(command, jsonChess, gameId);
+    }
+
     public Collection<GameData> listGames() throws ResponseException, DataAccessException{
         var result = new ArrayList<GameData>();
         try (Connection conn = DatabaseManager.getConnection()) {

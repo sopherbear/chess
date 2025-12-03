@@ -12,12 +12,11 @@ import io.javalin.websocket.*;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.server.Authentication;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
-
-
 import java.io.IOException;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
@@ -124,17 +123,43 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             ChessMove move = moveCommand.getMove();
             game.makeMove(move);
-            game.otherTeamTurn(color);
 
             var moveMessage = String.format("%s moved %s", username, move.toString());
+
+            gameDAO.updateGame(gameData.gameID(), game);
             var moveNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, moveMessage);
             connections.broadcast(session, gameData.gameID(), moveNote);
 
-        }catch (InvalidMoveException ex){
+            var updateBoards = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.game());
+            connections.broadcast(null, gameData.gameID(), updateBoards);
+            game.otherTeamTurn(color);
+
+            if (game.isInCheckmate(game.otherTeam(color))){
+                game.setTeamTurn(null);
+
+            } else if (game.isInCheck(game.otherTeam(color))){
+                var otherPlayerName = getOtherPlayer(gameData, color);
+                var message = String.format("%s is in check", otherPlayerName);
+                var checkNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                connections.broadcast(session, gameData.gameID(), checkNote);
+            } else if (game.isInStalemate(color)) {
+                game.setTeamTurn(null);
+                var message = String.format("Game over: stalemate");
+                var checkNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                connections.broadcast(session, gameData.gameID(), checkNote);
+            } else {
+                game.otherTeamTurn(color);
+            }
+            gameDAO.updateGame(gameData.gameID(), game);
+
+        } catch (InvalidMoveException ex){
             var newEx = new ResponseException(ResponseException.Code.ClientError, ex.getMessage());
             sendResponseErrorMessage(newEx, session);
         } catch(IOException ex) {
             ex.printStackTrace();
+        } catch (ResponseException ex) {
+            sendResponseErrorMessage(ex, session);
+        } catch (DataAccessException ex) {
         }
     }
 
@@ -160,6 +185,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         catch(IOException ex){
             ex.printStackTrace();
         }
+    }
+
+    private String getOtherPlayer(GameData gameData, ChessGame.TeamColor myColor) {
+        String otherPlayerName;
+        if (myColor == ChessGame.TeamColor.WHITE) {
+            otherPlayerName = gameData.blackUsername();
+        } else {
+            otherPlayerName = gameData.whiteUsername();
+        }
+        return otherPlayerName;
     }
 
 }
