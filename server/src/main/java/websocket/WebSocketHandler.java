@@ -130,6 +130,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
             var updateBoards = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.game());
             connections.broadcast(null, gameId, updateBoards);
+            var moveMessage = String.format("%s moved %s", username, convertMoveNotation(move));
+            var moveNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, moveMessage);
+            connections.broadcast(session, gameId, moveNote);
             game.otherTeamTurn(color);
 
             if (game.isInCheckmate(game.otherTeam(color))){
@@ -149,10 +152,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 var checkNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                 connections.broadcast(null, gameId, checkNote);
             } else {
-                game.otherTeamTurn(color);
-                var moveMessage = String.format("%s moved %s", username, convertMoveNotation(move));
-                var moveNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, moveMessage);
-                connections.broadcast(session, gameId, moveNote);
+
             }
             gameDAO.updateGame(gameId, game);
 
