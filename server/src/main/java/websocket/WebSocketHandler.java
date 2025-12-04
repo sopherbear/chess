@@ -55,7 +55,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (userCommand.getCommandType()) {
                 case CONNECT -> connect(gameId, session, username, color);
                 case MAKE_MOVE -> makeMove(new Gson().fromJson(ctx.message(), MakeMoveCommand.class), gameData, username, color, session);
-                case LEAVE -> leave();
+                case LEAVE -> leave(username, gameId, session);
                 case RESIGN -> resign(gameId, session, username, color);
                 case GET_BOARD -> getBoard(gameId, session);
             }
@@ -153,7 +153,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void leave(){}
+    private void leave(String username, Integer gameId, Session session){
+        try {
+            connections.remove(gameId, session);
+            var message = String.format("%s has left the game", username);
+            var leftNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast(null, gameId, leftNote);
+        } catch(IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     private void resign(Integer gameId, Session session, String username, ChessGame.TeamColor color){
         if (rejectIfIsObserver(color, session)){

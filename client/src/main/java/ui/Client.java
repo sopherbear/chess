@@ -226,8 +226,14 @@ public class Client implements ServerMessageObserver {
         return String.format("Redrawing board...\n");
     }
 
-    public String leaveGame(){
-        return String.format("Left game successfully\n");
+    public String leaveGame() throws ResponseException{
+        websocketCommunicator.leave(authToken, myGameId);
+        myGameId = null;
+        playerColor = null;
+        currGames = new HashMap<>();
+        state = State.POSTLOGIN;
+
+        return String.format("Left game.\n");
     }
 
     public String makeMove(String... params) throws ResponseException{

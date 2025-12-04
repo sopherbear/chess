@@ -86,4 +86,8 @@ public class WebsocketCommunicator extends Endpoint {
         }
     }
 
+    public void leave(String authToken, Integer gameId) throws ResponseException{
+        sendCommand(authToken, gameId, UserGameCommand.CommandType.LEAVE);
+    }
+
 }
