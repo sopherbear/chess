@@ -2,6 +2,7 @@ package websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
@@ -18,6 +19,7 @@ import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 import java.io.IOException;
+import java.util.Map;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
@@ -123,34 +125,36 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             ChessMove move = moveCommand.getMove();
             game.makeMove(move);
-
-            var moveMessage = String.format("%s moved %s", username, move.toString());
-
-            gameDAO.updateGame(gameData.gameID(), game);
-            var moveNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, moveMessage);
-            connections.broadcast(session, gameData.gameID(), moveNote);
+            var gameId = gameData.gameID();
+            gameDAO.updateGame(gameId, game);
 
             var updateBoards = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.game());
-            connections.broadcast(null, gameData.gameID(), updateBoards);
+            connections.broadcast(null, gameId, updateBoards);
             game.otherTeamTurn(color);
 
             if (game.isInCheckmate(game.otherTeam(color))){
                 game.setTeamTurn(null);
-
+                var otherPlayerName = getOtherPlayer(gameData, color);
+                var message = String.format("%s is in checkmate", otherPlayerName);
+                var checkMateNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                connections.broadcast(null, gameId, checkMateNote);
             } else if (game.isInCheck(game.otherTeam(color))){
                 var otherPlayerName = getOtherPlayer(gameData, color);
                 var message = String.format("%s is in check", otherPlayerName);
                 var checkNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-                connections.broadcast(session, gameData.gameID(), checkNote);
+                connections.broadcast(null, gameId, checkNote);
             } else if (game.isInStalemate(color)) {
                 game.setTeamTurn(null);
                 var message = String.format("Game over: stalemate");
                 var checkNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-                connections.broadcast(session, gameData.gameID(), checkNote);
+                connections.broadcast(null, gameId, checkNote);
             } else {
                 game.otherTeamTurn(color);
+                var moveMessage = String.format("%s moved %s", username, convertMoveNotation(move));
+                var moveNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, moveMessage);
+                connections.broadcast(session, gameId, moveNote);
             }
-            gameDAO.updateGame(gameData.gameID(), game);
+            gameDAO.updateGame(gameId, game);
 
         } catch (InvalidMoveException ex){
             var newEx = new ResponseException(ResponseException.Code.ClientError, ex.getMessage());
@@ -195,6 +199,31 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             otherPlayerName = gameData.whiteUsername();
         }
         return otherPlayerName;
+    }
+
+    private String convertMoveNotation(ChessMove move) {
+        var start = move.getStartPosition();
+        var end = move.getEndPosition();
+
+        String startStr = convertPositionNotation(start);
+        String endStr = convertPositionNotation(end);
+
+        return String.format("%s:%s", startStr, endStr);
+    }
+
+    private String convertPositionNotation(ChessPosition pos){
+        Map <Integer, String> colVals = Map.of(
+                1, "a",
+                2,"b",
+                3, "c",
+                4, "d",
+                5, "e",
+                6, "f",
+                7, "g",
+                8, "h"
+        );
+        var col = pos.getColumn();
+        return String.format("%s%d", colVals.get(col), pos.getRow());
     }
 
 }

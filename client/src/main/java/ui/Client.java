@@ -26,6 +26,7 @@ public class Client implements ServerMessageObserver {
     private Map<Integer, Integer> currGames = new HashMap<>();
     private ChessGame.TeamColor playerColor = null;
     private Integer myGameId = null;
+    private Boolean gameInSession = Boolean.FALSE;
 
     public Client(String serverUrl) throws ResponseException {
         server = new ServerFacade(serverUrl);
@@ -194,6 +195,7 @@ public class Client implements ServerMessageObserver {
             websocketCommunicator.connect(authToken, gameId);
 
             state = State.PLAYBALL;
+            gameInSession = Boolean.TRUE;
             return String.format("Joining game\n");
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected <GAMENUMBER> <PLAYERCOLOR> (WHITE or BLACK)\n");
@@ -232,6 +234,9 @@ public class Client implements ServerMessageObserver {
     }
 
     public String makeMove(String... params) throws ResponseException{
+        if (!gameInSession){
+            return String.format("The game is over.");
+        }
         if (params.length  == 3 && params[0].length() == 2 && params[1].length() == 2) {
             String start = params[0].toLowerCase();
             String end = params[1].toLowerCase();
@@ -293,7 +298,7 @@ public class Client implements ServerMessageObserver {
             helpMenu = RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "redraw"
                     + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - redraws the chessboard\n"
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "leave"
-                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - leave the game without finishing\n"
+                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - leave the game at any point\n"
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "move <Start Position> <End Position> <Promotion Piece>"
                     + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC
                     + " - make a chess move (e.g. b3 c4).\n - If promoting a pawn, put a promotion piece. If not, type none\n"
@@ -318,6 +323,9 @@ public class Client implements ServerMessageObserver {
     }
 
     public void displayNotification(String message){
+        if (message.contains("checkmate") || message.contains("stalemate")) {
+            gameInSession = Boolean.FALSE;
+        }
         System.out.println(SET_TEXT_COLOR_LIGHT_PINK + message);
         printPrompt();
     }
