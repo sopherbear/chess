@@ -243,7 +243,7 @@ public class Client implements ServerMessageObserver {
             ChessPiece.PieceType promoType = verifyPieceType(promoPiece);
             var chessMove = new ChessMove(startPosition, endPosition, promoType);
             websocketCommunicator.makeMove(authToken, myGameId, chessMove);
-            return String.format("Move made successfully\n");
+            return String.format("Assessing move...\n");
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected <Start Position> <End Position> <Promotion Piece>\n");
     }
@@ -344,19 +344,19 @@ public class Client implements ServerMessageObserver {
     }
 
     private ChessPosition convertToChessPosition(String positionCoords) throws ResponseException{
-        var xCoord = positionCoords.charAt(0);
-        var yCoord = positionCoords.charAt(1);
+        var colCoord = positionCoords.charAt(0);
+        var rowCoord = positionCoords.charAt(1);
 
-        var possibleX = "abcdefgh";
-        int xRow = possibleX.indexOf(xCoord);
+        var possibleCol = "abcdefgh";
+        int col = possibleCol.indexOf(colCoord);
 
-        if (!Character.isDigit(yCoord)) {
+        if (!Character.isDigit(rowCoord)) {
             throw new ResponseException(ResponseException.Code.ClientError, "Chess positions must be entered in this format: b3\n");
         }
-        int yRow = Character.getNumericValue(yCoord);
-        if (Character.isLetter(xCoord) && xRow != -1 && yRow >= 1 && yRow <= 8){
+        int row = Character.getNumericValue(rowCoord);
+        if (isLetter(colCoord) && col != -1 && row >= 1 && row <= 8){
 
-            return new ChessPosition(xRow+1, yRow);
+            return new ChessPosition(row, col+1);
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Chess positions must be entered in this format: b3\n");
     }
