@@ -12,8 +12,6 @@ import exception.ResponseException;
 import io.javalin.websocket.*;
 import model.AuthData;
 import model.GameData;
-import org.eclipse.jetty.server.Authentication;
-import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
@@ -55,7 +53,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (userCommand.getCommandType()) {
                 case CONNECT -> connect(gameId, session, username, color);
                 case MAKE_MOVE -> makeMove(new Gson().fromJson(ctx.message(), MakeMoveCommand.class), gameData, username, color, session);
-                case LEAVE -> leave(username, gameId, session);
+                case LEAVE -> leave(username,gameId, session, color);
                 case RESIGN -> resign(gameId, session, username, color);
                 case GET_BOARD -> getBoard(gameId, session);
             }
@@ -153,14 +151,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void leave(String username, Integer gameId, Session session){
+    private void leave(String username,Integer gameId, Session session, ChessGame.TeamColor color){
         try {
+            if (color != null){
+                gameDAO.removePlayer(gameId, color);
+            }
             connections.remove(gameId, session);
             var message = String.format("%s has left the game", username);
             var leftNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.broadcast(null, gameId, leftNote);
         } catch(IOException ex) {
             ex.printStackTrace();
+        } catch (ResponseException ex) {
+            sendResponseErrorMessage(ex, session);
+        } catch (DataAccessException ex) {
+            sendDataAccessErrorMessage(ex, session);
         }
     }
 

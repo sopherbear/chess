@@ -70,6 +70,21 @@ public class MySqlGameDAO implements GameDAO{
 
     }
 
+    public void removePlayer(int gameId, ChessGame.TeamColor playerColor) throws ResponseException, DataAccessException{
+        var gameData = getGame(gameId);
+        if (gameData == null) {
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid gameId\n");
+        }
+        String command;
+        if (playerColor == ChessGame.TeamColor.WHITE) {
+            command = "UPDATE game_data SET whiteUsername=DEFAULT WHERE gameID=?";
+        } else {
+            command = "UPDATE game_data SET blackUsername=DEFAULT WHERE gameID=?";
+        }
+        var updateExecutor = new ExecuteDatabaseUpdates();
+        updateExecutor.executeUpdate(command, gameId);
+    }
+
     public void updateGame(int gameId, ChessGame game) throws ResponseException, DataAccessException{
         var gameData = getGame(gameId);
         if (gameData == null) {
