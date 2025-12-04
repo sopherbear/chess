@@ -48,22 +48,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid login");
             }
             String username = authDAO.getAuth(userCommand.getAuthToken()).username();
-            ChessGame.TeamColor color = null;
 
-            GameData game = gameDAO.getGame(gameId);
-            var blackUser = game.blackUsername();
-            var whiteUser = game.whiteUsername();
-            if (blackUser != null && blackUser.equals(username)){
-                color = ChessGame.TeamColor.BLACK;
-            } else if (whiteUser != null && whiteUser.equals(username)){
-                color = ChessGame.TeamColor.WHITE;
-            }
+            GameData gameData = gameDAO.getGame(gameId);
+            ChessGame.TeamColor color = getClientColor(gameData, username);
 
             switch (userCommand.getCommandType()) {
                 case CONNECT -> connect(gameId, session, username, color);
-                case MAKE_MOVE -> makeMove(new Gson().fromJson(ctx.message(), MakeMoveCommand.class), game, username, color, session);
+                case MAKE_MOVE -> makeMove(new Gson().fromJson(ctx.message(), MakeMoveCommand.class), gameData, username, color, session);
                 case LEAVE -> leave();
-                case RESIGN -> resign();
+                case RESIGN -> resign(gameId, session, username);
                 case GET_BOARD -> getBoard(gameId, session);
             }
         } catch(ResponseException ex){
@@ -73,7 +66,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
         catch (IOException ex) {
             ex.printStackTrace();
-
         }
     }
 
@@ -117,6 +109,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         ChessGame game = gameData.game();
+        if (!game.gameIsInSession()) {
+            var ex =  new ResponseException(ResponseException.Code.ClientError, String.format("Error: No more moves can be made"));
+            sendResponseErrorMessage(ex, session);
+            return;
+        }
         if (game.getTeamTurn() != color) {
             var ex = new ResponseException(ResponseException.Code.ClientError, String.format("Error: It is not %s's turn", color));
             sendResponseErrorMessage(ex, session);
@@ -164,12 +161,30 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } catch (ResponseException ex) {
             sendResponseErrorMessage(ex, session);
         } catch (DataAccessException ex) {
+            sendDataAccessErrorMessage(ex, session);
         }
     }
 
     private void leave(){}
 
-    private void resign(){}
+    private void resign(Integer gameId, Session session, String username){
+        try {
+            GameData gameData = gameDAO.getGame(gameId);
+            ChessGame chessGame = gameData.game();
+            chessGame.endGame();
+            gameDAO.updateGame(gameId, chessGame);
+
+            var message = String.format("%s has resigned and forfeits the game", username);
+            var resignNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast(null, gameId, resignNote);
+        }  catch (ResponseException e) {
+            sendResponseErrorMessage(e, session);
+        }  catch(DataAccessException ex){
+            sendDataAccessErrorMessage(ex, session);
+        } catch(IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     private void sendResponseErrorMessage(ResponseException ex, Session session){
         try {
@@ -224,6 +239,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         );
         var col = pos.getColumn();
         return String.format("%s%d", colVals.get(col), pos.getRow());
+    }
+
+    private ChessGame.TeamColor getClientColor(GameData gameData, String username){
+        var blackUser = gameData.blackUsername();
+        var whiteUser = gameData.whiteUsername();
+
+        ChessGame.TeamColor color;
+        if (blackUser != null && blackUser.equals(username)){
+            color = ChessGame.TeamColor.BLACK;
+        } else if (whiteUser != null && whiteUser.equals(username)){
+            color = ChessGame.TeamColor.WHITE;
+        } else {
+            color = null;
+        }
+        return color;
     }
 
 }

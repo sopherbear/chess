@@ -72,6 +72,10 @@ public class WebsocketCommunicator extends Endpoint {
         }
     }
 
+    public void resign(String authToken, Integer gameId) throws ResponseException{
+        sendCommand(authToken, gameId, UserGameCommand.CommandType.RESIGN);
+    }
+
 
     private void sendCommand(String authToken, Integer gameId, UserGameCommand.CommandType type) throws ResponseException{
         try {

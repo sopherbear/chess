@@ -16,11 +16,21 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class ChessGame {
     public TeamColor teamTurn = TeamColor.WHITE;
     public ChessBoard gameBoard = new ChessBoard();
+    public Boolean gameInSession = Boolean.TRUE;
 
 
     public ChessGame() {
         gameBoard.resetBoard();
     }
+
+    public void endGame(){
+        gameInSession = Boolean.FALSE;
+    }
+
+    public Boolean gameIsInSession(){
+        return gameInSession;
+    }
+
 
     /**
      * @return Which team's turn it is

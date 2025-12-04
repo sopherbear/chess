@@ -253,8 +253,11 @@ public class Client implements ServerMessageObserver {
         throw new ResponseException(ResponseException.Code.ClientError, "Expected <Start Position> <End Position> <Promotion Piece>\n");
     }
 
-    public String resignGame(){
-        return String.format("You resigned. Better luck next time!\n");
+    public String resignGame() throws ResponseException{
+        gameInSession = Boolean.FALSE;
+        websocketCommunicator.resign(authToken, myGameId);
+        state = State.POSTLOGIN;
+        return String.format("Processing resignation...\n");
     }
 
     public String highlightValidMoves(String... params) {
