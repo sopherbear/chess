@@ -39,7 +39,6 @@ public class WebsocketCommunicator extends Endpoint {
                         case ERROR -> new Gson().fromJson(message, ErrorMessage.class);
                         case LOAD_GAME -> new Gson().fromJson(message, LoadGameMessage.class);
                     };
-                    //TODO: figure out the kind of server message and handle them
                     serverMessageObserver.notify(msg);
                 }
             });
@@ -75,7 +74,6 @@ public class WebsocketCommunicator extends Endpoint {
     public void resign(String authToken, Integer gameId) throws ResponseException{
         sendCommand(authToken, gameId, UserGameCommand.CommandType.RESIGN);
     }
-
 
     private void sendCommand(String authToken, Integer gameId, UserGameCommand.CommandType type) throws ResponseException{
         try {

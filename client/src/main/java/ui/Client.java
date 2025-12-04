@@ -26,6 +26,7 @@ public class Client implements ServerMessageObserver {
     private Map<Integer, Integer> currGames = new HashMap<>();
     private ChessGame.TeamColor playerColor = null;
     private Integer myGameId = null;
+    private ChessGame myGame = null;
 
     public Client(String serverUrl) throws ResponseException {
         server = new ServerFacade(serverUrl);
@@ -231,6 +232,7 @@ public class Client implements ServerMessageObserver {
         myGameId = null;
         playerColor = null;
         currGames = new HashMap<>();
+        myGame = null;
         state = State.POSTLOGIN;
 
         return String.format("Left game.\n");
@@ -258,11 +260,22 @@ public class Client implements ServerMessageObserver {
         return String.format("Processing resignation...\n");
     }
 
-    public String highlightValidMoves(String... params) {
-        return String.format("Valid moves highlighted in purple.\n");
+    public String highlightValidMoves(String... params) throws ResponseException{
+        if (playerColor == null) {
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: Observer cannot make moves\n");
+        }
+        if (params.length == 1) {
+            ChessPosition pos = convertToChessPosition(params[0]);
+            ChessPiece piece = myGame.getBoard().getPiece(pos);
+            if (piece.getTeamColor() != playerColor) {
+                throw new ResponseException(ResponseException.Code.ClientError, "Error: you don't have a piece there");
+            }
+            drawHighlights(myGame, pos);
+            return String.format("Valid moves highlighted in orange.\n");
+        }
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected <Piece Coordinates>\n");
     }
 
-    //TODO: Make sure to clear gameID and playerColor after game is over.
 
     public String help() {
         String helpMenu;
@@ -302,11 +315,11 @@ public class Client implements ServerMessageObserver {
                     + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - leave the game at any point\n"
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "move <Start Position> <End Position> <Promotion Piece>"
                     + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC
-                    + " - make a chess move (e.g. b3 c4).\n - If promoting a pawn, put a promotion piece. If not, type none\n"
+                    + " - make a chess move (e.g. b3 c4).\n - If promoting a pawn, put the piece name (e.g. rook). If not, type none\n"
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "resign"
                     + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - forfeit the game\n"
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "highlight <piece coordinates>"
-                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - enter piece coordinates (e.g. b3) to see all valid moves\n"
+                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - enter coordinates of a piece (e.g. b3) to highlight moves in orange\n"
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help"
                     + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";
         }
@@ -334,6 +347,7 @@ public class Client implements ServerMessageObserver {
     }
 
     public void loadGame(ChessGame game){
+        myGame = game;
         drawBoard(game.getBoard());
         printPrompt();
     }
@@ -346,7 +360,18 @@ public class Client implements ServerMessageObserver {
         } else {
             boardVisual = new ChessBoardVisual(board, ChessGame.TeamColor.WHITE);
         }
-        boardVisual.getBoardVisual();
+        boardVisual.getBoardVisual(null, null);
+    }
+
+    public void drawHighlights(ChessGame game, ChessPosition pos) {
+        System.out.println("\n");
+        ChessBoardVisual boardVisual;
+        if (playerColor == ChessGame.TeamColor.BLACK) {
+            boardVisual = new ChessBoardVisual(game.getBoard(), playerColor);
+        } else  {
+            boardVisual = new ChessBoardVisual(game.getBoard(), ChessGame.TeamColor.WHITE);
+        }
+        boardVisual.getBoardVisual(game, pos);
     }
 
     private ChessPosition convertToChessPosition(String positionCoords) throws ResponseException{
