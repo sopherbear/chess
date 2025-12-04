@@ -56,7 +56,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case CONNECT -> connect(gameId, session, username, color);
                 case MAKE_MOVE -> makeMove(new Gson().fromJson(ctx.message(), MakeMoveCommand.class), gameData, username, color, session);
                 case LEAVE -> leave();
-                case RESIGN -> resign(gameId, session, username);
+                case RESIGN -> resign(gameId, session, username, color);
                 case GET_BOARD -> getBoard(gameId, session);
             }
         } catch(ResponseException ex){
@@ -102,18 +102,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void makeMove(MakeMoveCommand moveCommand, GameData gameData, String username, ChessGame.TeamColor color, Session session){
-        if (color == null) {
-            var ex = new ResponseException(ResponseException.Code.ClientError, "Error: Observer can't make moves");
-            sendResponseErrorMessage(ex, session);
+        if (rejectIfIsObserver(color, session)){
+            return;
+        }
+        ChessGame game = gameData.game();
+        if (rejectIfGameOver(game, session)) {
             return;
         }
 
-        ChessGame game = gameData.game();
-        if (!game.gameIsInSession()) {
-            var ex =  new ResponseException(ResponseException.Code.ClientError, String.format("Error: No more moves can be made"));
-            sendResponseErrorMessage(ex, session);
-            return;
-        }
         if (game.getTeamTurn() != color) {
             var ex = new ResponseException(ResponseException.Code.ClientError, String.format("Error: It is not %s's turn", color));
             sendResponseErrorMessage(ex, session);
@@ -133,23 +129,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             game.otherTeamTurn(color);
 
             if (game.isInCheckmate(game.otherTeam(color))){
-                game.setTeamTurn(null);
-                var otherPlayerName = getOtherPlayer(gameData, color);
-                var message = String.format("%s is in checkmate", otherPlayerName);
-                var checkMateNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-                connections.broadcast(null, gameId, checkMateNote);
+                game.endGame();
+                notifyAllOfGameState(gameData, color, "checkmate");
             } else if (game.isInCheck(game.otherTeam(color))){
-                var otherPlayerName = getOtherPlayer(gameData, color);
-                var message = String.format("%s is in check", otherPlayerName);
-                var checkNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-                connections.broadcast(null, gameId, checkNote);
+                notifyAllOfGameState(gameData, color, "check");
             } else if (game.isInStalemate(color)) {
-                game.setTeamTurn(null);
+                game.endGame();
                 var message = String.format("Game over: stalemate");
                 var checkNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                 connections.broadcast(null, gameId, checkNote);
-            } else {
-
             }
             gameDAO.updateGame(gameId, game);
 
@@ -167,10 +155,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void leave(){}
 
-    private void resign(Integer gameId, Session session, String username){
+    private void resign(Integer gameId, Session session, String username, ChessGame.TeamColor color){
+        if (rejectIfIsObserver(color, session)){
+            return;
+        }
         try {
             GameData gameData = gameDAO.getGame(gameId);
             ChessGame chessGame = gameData.game();
+            if (rejectIfGameOver(chessGame, session)) {
+                return;
+            }
             chessGame.endGame();
             gameDAO.updateGame(gameId, chessGame);
 
@@ -254,6 +248,31 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             color = null;
         }
         return color;
+    }
+
+    private Boolean rejectIfIsObserver(ChessGame.TeamColor color, Session session){
+        if (color == null) {
+            var ex = new ResponseException(ResponseException.Code.ClientError, "Error: Observer can't participate in the game");
+            sendResponseErrorMessage(ex, session);
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
+
+    private void notifyAllOfGameState(GameData gameData, ChessGame.TeamColor color, String gameState) throws IOException{
+        var otherPlayerName = getOtherPlayer(gameData, color);
+        var message = String.format("%s is in %s", otherPlayerName, gameState);
+        var checkMateNote = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(null, gameData.gameID(), checkMateNote);
+    }
+
+    private Boolean rejectIfGameOver(ChessGame game, Session session){
+        if (!game.gameIsInSession()) {
+            var ex =  new ResponseException(ResponseException.Code.ClientError, String.format("Error: Game is over"));
+            sendResponseErrorMessage(ex, session);
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
 }
