@@ -1,16 +1,12 @@
 package websocket;
 
 import com.google.gson.Gson;
-import model.GameID;
 import org.eclipse.jetty.websocket.api.Session;
-import org.jetbrains.annotations.NotNull;
-import websocket.commands.UserGameCommand;
+
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,10 +41,6 @@ public class ConnectionManager {
         }
     }
 
-//    @NotNull
-//    private Collection<Vector<Session>> getValues() {
-//        return connections.values();
-//    }
 
 
 }
