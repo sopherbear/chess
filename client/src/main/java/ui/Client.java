@@ -261,14 +261,11 @@ public class Client implements ServerMessageObserver {
     }
 
     public String highlightValidMoves(String... params) throws ResponseException{
-        if (playerColor == null) {
-            throw new ResponseException(ResponseException.Code.ClientError, "Error: Observer cannot make moves\n");
-        }
         if (params.length == 1) {
             ChessPosition pos = convertToChessPosition(params[0]);
             ChessPiece piece = myGame.getBoard().getPiece(pos);
-            if (piece.getTeamColor() != playerColor) {
-                throw new ResponseException(ResponseException.Code.ClientError, "Error: you don't have a piece there");
+            if (piece == null) {
+                throw new ResponseException(ResponseException.Code.ClientError, "There is no piece at those coordinates.\n");
             }
             drawHighlights(myGame, pos);
             return String.format("Valid moves highlighted in orange.\n");
@@ -319,7 +316,7 @@ public class Client implements ServerMessageObserver {
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "resign"
                     + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - forfeit the game\n"
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "highlight <piece coordinates>"
-                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - enter coordinates of a piece (e.g. b3) to highlight moves in orange\n"
+                    + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - enter coordinates of any piece (e.g. b3) to highlight legal moves\n"
                     + RESET_TEXT_ITALIC + RESET_TEXT_COLOR + "help"
                     + SET_TEXT_COLOR_NEON_PURPLE + SET_TEXT_ITALIC + " - list possible actions\n";
         }
